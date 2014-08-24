@@ -1,24 +1,18 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 'Quizzibal: a silly jabber quizz bot'
-from jabberbot import JabberBot, botcmd
-import xmpp
 import time
 import re
 import random
 import os
 import sys
+from minibal import MiniBal
 import config
 
 
-class Quizzibal(JabberBot):
+# pylint: disable=too-many-public-methods
+class QuizziBal(MiniBal):
     'A jabber bot dedicated to quizzes'
-
-    __groupchat = None
-    __nickname = 'Quizzibal'
-    __jid = config.JID
-    __password = config.PASSWORD
-    __admin_jid = config.ADMIN_JID
 
     __quizzDir = "quizz"
     __currentFile = 0
@@ -31,23 +25,15 @@ class Quizzibal(JabberBot):
     __addingQuestion = False
     __currentQuestionFileAdded = ""
 
-    def __init__(self):
-        super(Quizzibal, self).__init__(self.__jid, self.__password)
-
-    def join_room(self, room):
-        """Join the specified multi-user chat room"""
-        room_jid = "%s/%s" % (room, self.__nickname)
-        self.connect().send(xmpp.Presence(to=room_jid))
-
     def unknown_command(self, mess, cmd, args):
-        matches = re.search("^(" + self.__nickname +\
+        matches = re.search("^(" + self.nickname +\
                             ")(( )?(: |, )?)(start|stop|score|next)",
                             mess.getBody())
         if matches:
             return self.quizzHandler(matches)
         else:
-            matches = re.search("^(" + self.__nickname +\
-                                ")(( )?(: |, )?)((\w| |[éèçàêâûîôäëüïö'])+)",
+            matches = re.search("^(" + self.nickname +\
+                                r")(( )?(: |, )?)((\w| |[éèçàêâûîôäëüïö'])+)",
                                 mess.getBody())
             if matches:
                 return self.quizzAnswerHandler(matches,
@@ -162,34 +148,9 @@ class Quizzibal(JabberBot):
         return self.__currentQuestion[0]
 
 
-    @botcmd
-    def _quit(self, mess, args):
-        """Logs out"""
-        if str(mess.getFrom()).find(self.__admin_jid) == 0:
-            self.quit()
-            return "I quit!"
-        else:
-            usrnm = self.get_sender_username(mess)
-        return str(usrnm)+ " : Not authorized!"
-
-
-    @botcmd
-    def _join(self, mess, args):
-        """Joins a groupchat"""
-        if str(mess.getFrom()).find(self.__admin_jid) == 0:
-            if re.match('^(\w+)@(\w+)(\.(\w+))+$', args):
-                self.join_room(args)
-                self.__groupchat = args
-                return "joined "+args
-            else:
-                return "Malformed url"
-        else:
-            usrnm = self.get_sender_username(mess)
-        return str(usrnm)+ " : Not authorized!"
-
 if __name__ == '__main__':
     #dirty fix, but needed to use unicode…
     reload(sys)
     sys.setdefaultencoding("utf-8")
-    BOT = Quizzibal()
+    BOT = QuizziBal(config.JID, config.PASSWORD, 'Quizzibal', config.ADMIN_JID)
     BOT.serve_forever()
