@@ -9,21 +9,22 @@ import sys
 from minibal import MiniBal
 import config
 
+QUIZZ_DIR = 'quizz'
+
 
 # pylint: disable=too-many-public-methods
 class QuizziBal(MiniBal):
     'A jabber bot dedicated to quizzes'
 
-    __quizzDir = "quizz"
-    __currentFile = 0
-    __currentQuestion = list()
-    __questionAsked = False
-    __questionDone = list()
-    __score = dict()
-    __quizzMode = False
+    current_file = 0
+    current_question = list()
+    question_asked = False
+    question_done = list()
+    scores = dict()
+    quizz_mode = False
 
-    __addingQuestion = False
-    __currentQuestionFileAdded = ""
+    adding_question = False
+    current_question_file_added = ""
 
     def unknown_command(self, mess, cmd, args):
         matches = re.search("^(" + self.nickname +\
@@ -42,16 +43,16 @@ class QuizziBal(MiniBal):
                 matches = re.search("^question add$", mess.getBody())
 
                 if matches and mess.getType() == "chat"\
-                   and self.__addingQuestion == False:
+                   and self.adding_question == False:
                     return self.questionAdder(mess, "prequestion")
                 else:
-                    if self.__addingQuestion and mess.getType() == "chat":
+                    if self.adding_question and mess.getType() == "chat":
                         return self.questionAdder(mess, "question")
 
     def questionAdder(self, message, state):
         'Adds a new quizz question'
         if state == "prequestion":
-            self.__addingQuestion = True
+            self.adding_question = True
             text = 'Enter your question, in a single message {}.\n'\
                    'Do not forget the template\n:'.format(
                        self.get_sender_username(message))
@@ -64,42 +65,42 @@ class QuizziBal(MiniBal):
             return text
         else:
             if state == "question":
-                if self.__currentQuestionFileAdded == "":
-                    self.__currentQuestionFileAdded = "{}/{}.{}.quizz".format(
-                        self.__quizzDir,
+                if self.current_question_file_added == "":
+                    self.current_question_file_added = "{}/{}.{}.quizz".format(
+                        QUIZZ_DIR,
                         self.get_sender_username(message),
                         time.time())
-                    with open(self.__currentQuestionFileAdded, 'a')\
+                    with open(self.current_question_file_added, 'a')\
                          as f_question:
                         f_question.write(message.getBody()+"\n")
 
-                    self.__addingQuestion = False
-                    self.__currentQuestionFileAdded = ""
+                    self.adding_question = False
+                    self.current_question_file_added = ""
                     return "Your question has been successfully added, "\
                         "{}".format(self.get_sender_username(message))
 
     def quizzScoreHandler(self):
         'Displays the scores'
         msg = ""
-        for i in self.__score.keys():
-            msg += i +': %d\n' % (self.__score[i])
+        for i in self.scores.keys():
+            msg += i +': %d\n' % (self.scores[i])
         return msg
 
     def quizzAnswerHandler(self, matchobject, username):
         'Handles user answers'
-        if self.__questionAsked:
+        if self.question_asked:
             answer = matchobject.group(5)
-            for i in range(1, len(self.__currentQuestion)):
-                if re.match(answer, self.__currentQuestion[i], re.IGNORECASE):
-                    if username in self.__score:
-                        self.__score[username] += 1
+            for i in range(1, len(self.current_question)):
+                if re.match(answer, self.current_question[i], re.IGNORECASE):
+                    if username in self.scores:
+                        self.scores[username] += 1
                     else:
-                        self.__score[username] = 1
+                        self.scores[username] = 1
 
-                    self.__questionAsked = False
+                    self.question_asked = False
                     return "Good answer {}!\nYou have now {} points\n"\
                         "Next question: {}".format(
-                            username, self.__score[username],
+                            username, self.scores[username],
                             self.askNextQuestion())
 
             return "Sorry {}, {} is not the answer to my question.".format(
@@ -111,41 +112,41 @@ class QuizziBal(MiniBal):
     def quizzHandler(self, matchobject):
         'Starts and stops quizz sessions'
         msg = matchobject.group(5)
-        if msg == "start" and not self.__quizzMode:
-            self.__quizzMode = True
-            if self.__quizzMode and os.access(self.__quizzDir, os.F_OK)\
-               and not self.__questionAsked:
+        if msg == "start" and not self.quizz_mode:
+            self.quizz_mode = True
+            if self.quizz_mode and os.access(QUIZZ_DIR, os.F_OK)\
+               and not self.question_asked:
                 return self.askNextQuestion()
             else:
-                self.__quizzMode = False
+                self.quizz_mode = False
                 return "Quizz directory does not exist, cannot proceed"
         else:
             if msg == "stop":
-                self.__quizzMode = False
+                self.quizz_mode = False
                 return "Quizz stopped"
             else:
                 if msg == "score":
                     return self.quizzScoreHandler()
                 else:
-                    if msg == "next" and not self.__questionAsked:
+                    if msg == "next" and not self.question_asked:
                         return self.askNextQuestion()
 
     def askNextQuestion(self):
         'Asks the next question'
-        listDir = os.listdir(self.__quizzDir)
-        if len(listDir) == len(self.__questionDone):
-            del self.__questionDone[:]
+        quizz_files = os.listdir(QUIZZ_DIR)
+        if len(quizz_files) == len(self.question_done):
+            del self.question_done[:]
 
-        index = random.randint(0, len(listDir)-1)
-        while index in self.__questionDone:
-            index = random.randint(0, len(listDir)-1)
+        index = random.randint(0, len(quizz_files)-1)
+        while index in self.question_done:
+            index = random.randint(0, len(quizz_files)-1)
 
-        with open(self.__quizzDir + "/" + listDir[index], "r") as f_question:
-            self.__currentQuestion = f_question.readlines()
+        with open(QUIZZ_DIR + "/" + quizz_files[index], "r") as f_question:
+            self.current_question = f_question.readlines()
 
-        self.__questionAsked = True
-        self.__questionDone.append(index)
-        return self.__currentQuestion[0]
+        self.question_asked = True
+        self.question_done.append(index)
+        return self.current_question[0]
 
 
 if __name__ == '__main__':
