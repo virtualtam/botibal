@@ -24,6 +24,7 @@ class MiniBal(JabberBot):
     def join_groupchat(self, room):
         'Joins the specified multi-user chat room'
         room_jid = '{}/{}'.format(room, self.nickname)
+        self.groupchat = room
         self.connect().send(xmpp.Presence(to=room_jid))
 
 
@@ -33,7 +34,6 @@ class MiniBal(JabberBot):
         if self.admin_jid in str(mess.getFrom()):
             if re.match(r'^(\w+)@(\w+)(\.(\w+))+$', args):
                 self.join_groupchat(args)
-                self.groupchat = args
                 return "joined "+args
             else:
                 return "Malformed url"
@@ -74,10 +74,10 @@ class MiniBal(JabberBot):
     def plop(self, mess, name):
         '''Cordially answers a user's plopping'''
         if self.groupchat is None:
-            return
+            return 'No groupchat joined'
 
-        if name is not self.nickname\
-           or mess.getFrom().getResource() is self.nickname:
+        if name != self.nickname\
+           or mess.getFrom().getResource() == self.nickname:
             return
 
         self.send(self.groupchat,
