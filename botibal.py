@@ -6,14 +6,12 @@ import xmpp
 import datetime
 import re
 import random
-import os
 import sys
-import fileinput
 import config
 
 
 class Botibal(JabberBot):
-
+    'A silly fukung-addict jabber bot'
     __jid = config.JID
     __password = config.PASSWORD
     __admin = config.ADMIN_JID
@@ -31,76 +29,88 @@ class Botibal(JabberBot):
 
     def join_room(self, room):
         """Join the specified multi-user chat room"""
-        my_room_JID = "%s/%s" % (room,self.__nickname)
-        self.connect().send(xmpp.Presence(to=my_room_JID))
+        room_jid = "%s/%s" % (room, self.__nickname)
+        self.connect().send(xmpp.Presence(to=room_jid))
 
     def unknown_command(self, mess, cmd, args):
         if self.get_sender_username(mess) != self.__nickname:
-            m = re.search(self.__fukung, mess.getBody())
-            if m:
-                self.appendToFukung(m)
+            matches = re.search(self.__fukung, mess.getBody())
+            if matches:
+                self.appendToFukung(matches)
                 return
             else:
                 return self.failsHandler(mess)
 
     def failsHandler(self, mess):
-        m = re.search('('+self.__nickname+': )?fails add (\w+)', mess.getBody())
-        if m:
-            return self.failcount('add', m.group(2))
+        'Handles "fail" events'
+        matches = re.search('(' + self.__nickname + ': )?fails add (\w+)',
+                            mess.getBody())
+        if matches:
+            return self.failcount('add', matches.group(2))
         else:
-            m = re.search('('+self.__nickname+': )?fails( dump)? ?(\w+@\w+\.\w+)?', mess.getBody())
-            if m:
-                if m.group(3):
-                    if m.group(2):
-                        return self.failcount(m.group(2), m.group(3))
+            matches = re.search(
+                '('+self.__nickname+': )?fails( dump)? ?(\w+@\w+\.\w+)?',
+                mess.getBody())
+            if matches:
+                if matches.group(3):
+                    if matches.group(2):
+                        return self.failcount(matches.group(2),
+                                              matches.group(3))
                     else:
-                        return self.failcount('dump', m.group(3))
+                        return self.failcount('dump', matches.group(3))
                 else:
-                    if m.group(2):
-                        return self.failcount(m.group(2), 'all')
+                    if matches.group(2):
+                        return self.failcount(matches.group(2), 'all')
  #                   else:
 #                        return self.failcount('dump', 'all')
             else:
-                m = re.search('('+self.__nickname+'(:|,)? )(failcount|fails|fail)\+\+', mess.getBody())
-                if m:
+                matches = re.search(
+                    '('+self.__nickname+'(:|,)? )(failcount|fails|fail)\+\+',
+                    mess.getBody())
+                if matches:
                     return self.failcount('add', self.get_sender_username(mess))
                 else:
-                    m = re.search('('+self.__nickname+'(:|,)? )(failcount|fails|fail)--', mess.getBody())
-                    if m:
-                        return self.failcount('del', self.get_sender_username(mess))
+                    matches = re.search(
+                        '('+self.__nickname+'(:|,)? )(failcount|fails|fail)--',
+                        mess.getBody())
+                    if matches:
+                        return self.failcount(
+                            'del', self.get_sender_username(mess))
                     else:
                         return None
 
 
     def appendToFukung(self, matchobject):
         fileOut = open('fukung.log', 'a')
-        text = matchobject.group(2)+'/'+matchobject.group(3)+'.'+matchobject.group(4)+'\n'
+        text = matchobject.group(2)+'/'+matchobject.group(3)+'.'\
+               +matchobject.group(4)+'\n'
         fileOut.write(text)
         fileOut.close()
 
-    def readFukung(self, method = 'rand'):
+    def readFukung(self, method='rand'):
         fileIn = open('fukung.log', 'r')
         lines = fileIn.readlines()
         if method == 'dump':
-            str = ''
+            url = ''
             for i in lines:
-                str += 'http://www.fukung.net/v/'+i
-            return str
+                url += 'http://www.fukung.net/v/'+i
+            return url
         else:
-            return 'http://www.fukung.net/v/'+lines[random.randint(0,len(lines))]
+            return 'http://www.fukung.net/v/'\
+                +lines[random.randint(0, len(lines))]
 
     def failcount(self, method, user):
         if method == 'dump' and self.__fails != None:
             if user == 'all':
-                str = 'Fails: \n'
+                msg = 'Fails: \n'
                 for i in self.__fails.keys():
-                    str += i +': %d\n' % (self.__fails[i])
-                return str
+                    msg += i +': %d\n' % (self.__fails[i])
+                return msg
             else:
-                str = user +'\'s failcount: %d' % (self.__fails[user])
+                msg = user +'\'s failcount: %d' % (self.__fails[user])
                 if self.__fails[user] >= 5:
-                    str += ' \n'+user+' shall now use a new name'
-                return str
+                    msg += ' \n'+user+' shall now use a new name'
+                return msg
         else:
             if method == 'add' and user != 'all':
                 if user in self.__fails:
@@ -123,31 +133,31 @@ class Botibal(JabberBot):
     def fails(self, mess, args):
         """Displays fails"""
         usrnm = self.get_sender_username(mess)
-        if(re.match('^_(.)*', args)):
+        if re.match('^_(.)*', args):
             return "Do not try to unleash the infinite fury, "+str(usrnm)
         else:
             return self.failcount('dump', 'all')
 
     @botcmd
-    def _time( self, mess, args):
+    def _time(self, mess, args):
         """Displays current server time"""
         usrnm = self.get_sender_username(mess)
         return str(usrnm)+" : "+str(datetime.datetime.today())
 
     @botcmd
-    def _rot13( self, mess, args):
+    def _rot13(self, mess, args):
         """Returns passed arguments rot13'ed"""
         usrnm = self.get_sender_username(mess)
         return str(usrnm)+" : "+args.encode('rot13')
 
     @botcmd
-    def _whoami( self, mess, args):
+    def _whoami(self, mess, args):
         """Tells you your username"""
         usrnm = self.get_sender_username(mess)
         return str(usrnm)+": You are "+str(mess.getFrom())+"..."
 
     @botcmd
-    def _quit (self, mess, args):
+    def _quit(self, mess, args):
         """Logs out"""
         if str(mess.getFrom()).find(""+self.__admin+"") == 0:
             self.quit()
@@ -158,10 +168,10 @@ class Botibal(JabberBot):
 
 
     @botcmd
-    def _join (self, mess, args):
+    def _join(self, mess, args):
         """Joins a groupchat"""
         if str(mess.getFrom()).find(""+self.__admin+"") == 0:
-            if(re.match('^(\w+)@(\w+)(\.(\w+))+$', args)):
+            if re.match('^(\w+)@(\w+)(\.(\w+))+$', args):
                 self.join_room(args)
                 self.__groupchat = args
                 return "joined "+args
@@ -175,7 +185,7 @@ class Botibal(JabberBot):
     def _say(self, mess, args):
         """Says passed argument"""
         usrnm = self.get_sender_username(mess)
-        if(re.match('^_(.)*', args)):
+        if re.match('^_(.)*', args):
             return "Do not try to unleash the infinite fury, "+str(usrnm)
         else:
             return args
@@ -188,9 +198,12 @@ class Botibal(JabberBot):
     @botcmd
     def plop(self, mess, name):
         """Responds to a plopping"""
-        if self.__groupchat != None :
-            if name==self.__nickname and mess.getFrom().getResource() != self.__nickname :
-                self.send(self.__groupchat, 'plop '+mess.getFrom().getResource(), None, 'groupchat')
+        if self.__groupchat != None:
+            if name == self.__nickname\
+               and mess.getFrom().getResource() != self.__nickname:
+                self.send(self.__groupchat,
+                          'plop {}'.format(mess.getFrom().getResource()),
+                          None, 'groupchat')
                 return
         else:
             return
@@ -206,19 +219,19 @@ class Botibal(JabberBot):
     @botcmd
     def _insult(self, mess, name):
         """Insults someone"""
-        fileIn = open('insults.txt', 'r')
-        lines = fileIn.readlines()
+        with open('insults.txt', 'r') as f_insults:
+            lines = f_insults.readlines()
+
         if name:
             ret = name + ' : '
         else:
             ret = ''
-        ret = ret + lines[random.randint(0,len(lines))].replace('\n', '')
-        fileIn.close()
+        ret = ret + lines[random.randint(0, len(lines))].replace('\n', '')
         return ret
 
 if __name__ == '__main__':
     #dirty fix, but needed to use unicode…
     reload(sys)
     sys.setdefaultencoding("utf-8")
-    bot = Botibal()
-    bot.serve_forever()
+    BOT = Botibal()
+    BOT.serve_forever()
