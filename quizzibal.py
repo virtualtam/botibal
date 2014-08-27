@@ -9,8 +9,6 @@ import sys
 from minibal import MiniBal
 import config
 
-QUIZZ_DIR = 'quizz'
-
 
 # pylint: disable=too-many-public-methods
 class QuizziBal(MiniBal):
