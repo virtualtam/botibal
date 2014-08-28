@@ -16,7 +16,8 @@ class Question(object):
         if filepath:
             self.filepath = filepath
         else:
-            self.filepath = '{}.quizz'.format(datetime.date.today())
+            self.filepath = '{}.quizz'.format(
+                datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
 
 
     def save_to_file(self):
@@ -51,7 +52,7 @@ class Quizz(object):
             with open(path) as f_question:
                 lines = f_question.read().splitlines()
                 try:
-                    self.questions.append(Question(lines[0], lines[1:-1], path))
+                    self.questions.append(Question(lines[0], lines[1:], path))
                 except IndexError:
                     continue
 
@@ -61,6 +62,7 @@ class Quizz(object):
         que = Question(question, answers, filepath)
         self.questions.append(que)
         que.save_to_file()
+        return 'Added: {}'.format(que.filepath)
 
 
     def delete_question(self, index):
@@ -68,12 +70,13 @@ class Quizz(object):
         try:
             filepath = self.questions[index].filepath
         except IndexError:
-            print 'Wrong index'
-            return
+            return 'Wrong index: {}'.format(index)
 
         if os.path.isfile(filepath):
             os.remove(filepath)
         del self.questions[index]
+
+        return 'The question #{} has been deleted'.format(index)
 
 
     def list_questions(self):
@@ -82,7 +85,7 @@ class Quizz(object):
                           for index, que in enumerate(self.questions)])
 
 
-    def ask_question(self):
+    def ask_next_question(self):
         'Asks a question'
         index = random.randint(0, len(self.questions) - 1)
         self.current_question = self.questions[index]
@@ -91,4 +94,4 @@ class Quizz(object):
 
     def check_answer(self, answer):
         'Checks if an answer is suitable'
-        self.current_question.check_answer(answer)
+        return self.current_question.check_answer(answer)
