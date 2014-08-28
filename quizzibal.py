@@ -42,7 +42,7 @@ class QuizziBal(MiniBal):
 
         # check an answer
         matches = re.search("^(" + self.nickname +\
-                            r")(( )?(: |, )?)((\w| |[éèçàêâûîôäëüïö'])+)",
+                            r")(( )?(: |, )?)((\w| |[\.,:éèçàêâûîôäëüïö'])+)",
                             mess.getBody())
         if matches:
             return self.check_answer(matches, self.get_sender_username(mess))
