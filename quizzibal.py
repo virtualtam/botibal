@@ -35,7 +35,7 @@ class QuizziBal(MiniBal):
 
         # start/stop the quizz, display scores, skip the question
         matches = re.search("^(" + self.nickname +\
-                            ")(( )?(: |, )?)(start|stop|score|next)",
+                            ")(( )?(: |, )?)(start|stop|score|next)|reset",
                             mess.getBody())
         if matches:
             return self.control(matches)
@@ -74,6 +74,12 @@ class QuizziBal(MiniBal):
         'Displays the scores'
         return '\n'.join(['{}: {}'.format(user, score)
                           for user, score in self.scores.items()])
+
+
+    def reset_scores(self):
+        'Resets all scores'
+        self.scores = dict()
+        return 'All scores have been reset!'
 
 
     def check_answer(self, matchobject, username):
@@ -115,6 +121,9 @@ class QuizziBal(MiniBal):
 
         if msg == "score":
             return self.display_scores()
+
+        if msg == 'reset':
+            return self.reset_scores()
 
         if msg == "next":
             return self.ask_next_question()
