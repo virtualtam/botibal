@@ -16,13 +16,15 @@ class BotiBal(MiniBal):
 
 
     def unknown_command(self, mess, cmd, args):
-        if self.get_sender_username(mess) != self.nickname:
-            matches = re.search(fukung.REGEX, mess.getBody())
-            if matches:
-                fukung.append(matches)
-                return
-            else:
-                return self.failsHandler(mess)
+        if self.get_sender_username(mess) == self.nickname:
+            return
+
+        matches = re.search(fukung.REGEX, mess.getBody())
+        if matches:
+            fukung.append(matches)
+            return
+
+        return self.failsHandler(mess)
 
     def failsHandler(self, mess):
         'Handles "fail" events'
@@ -30,37 +32,35 @@ class BotiBal(MiniBal):
                             mess.getBody())
         if matches:
             return self.failcount('add', matches.group(2))
-        else:
-            matches = re.search(
-                '(' + self.nickname + r': )?fails( dump)? ?(\w+@\w+\.\w+)?',
-                mess.getBody())
-            if matches:
-                if matches.group(3):
-                    if matches.group(2):
-                        return self.failcount(matches.group(2),
-                                              matches.group(3))
-                    else:
-                        return self.failcount('dump', matches.group(3))
-                else:
-                    if matches.group(2):
-                        return self.failcount(matches.group(2), 'all')
- #                   else:
-#                        return self.failcount('dump', 'all')
-            else:
-                matches = re.search(
-                    '(' + self.nickname + r'(:|,)? )(failcount|fails|fail)\+\+',
-                    mess.getBody())
-                if matches:
-                    return self.failcount('add', self.get_sender_username(mess))
-                else:
-                    matches = re.search(
-                        '('+self.nickname+'(:|,)? )(failcount|fails|fail)--',
-                        mess.getBody())
-                    if matches:
-                        return self.failcount(
-                            'del', self.get_sender_username(mess))
-                    else:
-                        return None
+
+        matches = re.search(
+            '(' + self.nickname + r': )?fails( dump)? ?(\w+@\w+\.\w+)?',
+            mess.getBody())
+        if matches:
+            if matches.group(3):
+                if matches.group(2):
+                    return self.failcount(matches.group(2),
+                                          matches.group(3))
+
+                return self.failcount('dump', matches.group(3))
+
+            if matches.group(2):
+                return self.failcount(matches.group(2), 'all')
+
+        matches = re.search(
+            '(' + self.nickname + r'(:|,)? )(failcount|fails|fail)\+\+',
+            mess.getBody())
+        if matches:
+            return self.failcount('add', self.get_sender_username(mess))
+
+        matches = re.search(
+            '('+self.nickname+'(:|,)? )(failcount|fails|fail)--',
+            mess.getBody())
+        if matches:
+            return self.failcount(
+                'del', self.get_sender_username(mess))
+
+        return None
 
 
     def failcount(self, method, user):
@@ -96,28 +96,27 @@ class BotiBal(MiniBal):
 
     @botcmd
     def fails(self, mess, args):
-        """Displays fails"""
-        usrnm = self.get_sender_username(mess)
+        'Displays fails'
+        usrnm = str(self.get_sender_username(mess))
         if re.match('^_(.)*', args):
-            return "Do not try to unleash the infinite fury, "+str(usrnm)
-        else:
-            return self.failcount('dump', 'all')
+            return 'Do not try to unleash the infinite fury, {}!'.format(usrnm)
+
+        return self.failcount('dump', 'all')
 
     @botcmd
     def _rot13(self, mess, args):
-        """Returns passed arguments rot13'ed"""
-        usrnm = self.get_sender_username(mess)
-        return str(usrnm)+" : "+args.encode('rot13')
+        'Returns passed arguments rot13ed'
+        usrnm = str(self.get_sender_username(mess))
+        return '{}: {}'.format(usrnm, args.encode('rot13'))
 
 
     @botcmd
     def _fshow(self, mess, args):
-        """Gives an almost random image url from fukung"""
+        'Gives an almost random image url from fukung'
         if args == 'dump':
             return fukung.read(method=args)
-        else:
-            return fukung.read()
 
+        return fukung.read()
 
 
 if __name__ == '__main__':

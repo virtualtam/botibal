@@ -18,7 +18,6 @@ class QuizziBal(MiniBal):
         super(QuizziBal, self).__init__(jid, password, nickname, admin_jid)
         self.quizz = Quizz()
         self.scores = dict()
-        self.current_question = None
         self.adding_question = False
         self.running = False
 
@@ -35,7 +34,7 @@ class QuizziBal(MiniBal):
 
         # start/stop the quizz, display scores, skip the question
         matches = re.search("^(" + self.nickname +\
-                            ")(( )?(: |, )?)(start|stop|score|next)|reset",
+                            ")(( )?(: |, )?)(start|stop|score|next|reset)",
                             mess.getBody())
         if matches:
             return self.control(matches)
@@ -107,12 +106,14 @@ class QuizziBal(MiniBal):
         'Starts and stops quizz sessions'
         msg = matchobject.group(5)
 
-        if msg == "start" and self.running is False:
-            self.running = True
+        if msg == "start":
+            if self.running:
+                return 'The quizz is already running ^_^'
 
             if not os.access(QUIZZ_DIR, os.F_OK):
                 return "Quizz directory does not exist, cannot proceed"
 
+            self.running = True
             return self.ask_next_question()
 
         if msg == "stop":
