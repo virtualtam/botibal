@@ -6,7 +6,7 @@ import os
 import re
 import sys
 from minibal import MiniBal
-from quizz import Quizz, QUIZZ_DIR
+from quizz import Quizz, QUIZZ_DIR, ScoreDict
 import config
 
 
@@ -17,7 +17,7 @@ class QuizziBal(MiniBal):
     def __init__(self, jid, password, nickname, admin_jid):
         super(QuizziBal, self).__init__(jid, password, nickname, admin_jid)
         self.quizz = Quizz()
-        self.scores = dict()
+        self.scores = ScoreDict()
         self.adding_question = False
         self.running = False
 
@@ -69,18 +69,6 @@ class QuizziBal(MiniBal):
         return self.quizz.add_question(lines[0], lines[1:], filepath)
 
 
-    def display_scores(self):
-        'Displays the scores'
-        return '\n'.join(['{}: {}'.format(user, score)
-                          for user, score in self.scores.items()])
-
-
-    def reset_scores(self):
-        'Resets all scores'
-        self.scores = dict()
-        return 'All scores have been reset!'
-
-
     def check_answer(self, matchobject, username):
         'Handles user answers'
         if not self.running:
@@ -88,15 +76,11 @@ class QuizziBal(MiniBal):
 
         answer = matchobject.group(5)
         if self.quizz.check_answer(answer):
-            if username in self.scores:
-                self.scores[username] += 1
-            else:
-                self.scores[username] = 1
-
-            return "Good answer {}!\nYou have now {} points\n"\
-                "Next question: {}".format(
+            self.scores.add_score(username, 1)
+            return 'Good answer {}!\nYou now have {} points\n'\
+                'Next question: {}'.format(
                     username, self.scores[username],
-                    self.ask_next_question())
+                    self.quizz.ask_next_question())
 
         return "Sorry {}, {} is not the answer to my question.".format(
             username, answer)
@@ -104,6 +88,7 @@ class QuizziBal(MiniBal):
 
     def control(self, matchobject):
         'Starts and stops quizz sessions'
+        # pylint: disable=too-many-return-statements
         msg = matchobject.group(5)
 
         if msg == "start":
@@ -114,29 +99,26 @@ class QuizziBal(MiniBal):
                 return "Quizz directory does not exist, cannot proceed"
 
             self.running = True
-            return self.ask_next_question()
+            return self.quizz.ask_next_question()
 
         if msg == "stop":
             self.running = False
             return "Quizz stopped"
 
-        if msg == "score":
-            return self.display_scores()
+        if msg == 'score':
+            return self.scores.results()
 
         if msg == 'reset':
-            return self.reset_scores()
+            self.scores.reset()
+            return 'All scores have been reset!'
 
         if msg == "next":
-            return self.ask_next_question()
-
-
-    def ask_next_question(self):
-        'Asks the next question'
-        return self.quizz.ask_next_question()
+            return self.quizz.ask_next_question()
 
 
 if __name__ == '__main__':
-    #dirty fix, but needed to use unicode…
+    # dirty fix, but needed to use unicode…
+    # pylint: disable=no-member
     reload(sys)
     sys.setdefaultencoding("utf-8")
     BOT = QuizziBal(config.JID, config.PASSWORD, 'Quizzibal', config.ADMIN_JID)

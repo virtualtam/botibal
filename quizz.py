@@ -8,6 +8,28 @@ import random
 QUIZZ_DIR = 'quizz'
 
 
+class ScoreDict(dict):
+    '''Stores the game's scores'''
+    def add_score(self, username, score):
+        'Adds a new score for a given user'
+        if username in self:
+            self[username] += score
+        else:
+            self[username] = score
+
+
+    def reset(self):
+        'Resets the scores for all users'
+        for username in self:
+            self[username] = 0
+
+
+    def results(self):
+        'Displays the scores'
+        return '\n'.join(['{}: {}'.format(user, score)
+                          for user, score in self.items()])
+
+
 class Question(object):
     'Represents a question and its possible answers'
     def __init__(self, question, answers, filepath=None):
