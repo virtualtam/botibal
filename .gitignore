@@ -4,6 +4,3 @@ quizz/*
 *.log
 *.xml
 *.txt
-
-# python2 virtualenv
-ENV/

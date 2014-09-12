@@ -4,7 +4,7 @@ from jabberbot import JabberBot, botcmd
 import xmpp
 import datetime
 import re
-import random
+from taunt import Tauntionary
 
 # pylint: disable=too-many-public-methods,unused-argument
 class MiniBal(JabberBot):
@@ -16,9 +16,7 @@ class MiniBal(JabberBot):
         self.admin_jid = admin_jid
         self.groupchat = None
         super(MiniBal, self).__init__(self.jid, self.password)
-
-        with open('insults.txt', 'r') as f_insults:
-            self.insults = f_insults.readlines()
+        self.tauntionary = Tauntionary()
 
 
     def join_groupchat(self, room):
@@ -85,15 +83,15 @@ class MiniBal(JabberBot):
                   None, 'groupchat')
 
     @botcmd
-    def _insult(self, mess, name):
-        'Insults someone'
-        insult = ''
+    def _taunt(self, mess, name):
+        'Taunts someone'
+        taunt = ''
 
         if name:
-            insult = '{} : '.format(name)
+            taunt = '{}: '.format(name)
 
-        insult += self.insults[random.randint(0, len(self.insults))]
-        return insult.replace('\n', '')
+        taunt += self.tauntionary.taunt()
+        return taunt
 
 
     @botcmd
@@ -101,6 +99,7 @@ class MiniBal(JabberBot):
         """Tells you your username"""
         usrnm = self.get_sender_username(mess)
         return str(usrnm)+": You are "+str(mess.getFrom())+"..."
+
 
     @botcmd
     def _time(self, mess, args):
