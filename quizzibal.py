@@ -5,8 +5,8 @@ import datetime
 import os
 import re
 import sys
-from minibal import MiniBal
-from quizz import Quizz, QUIZZ_DIR, ScoreDict
+from minibal.client import MiniBal
+from minibal.quizz import Quizz, QUIZZ_DIR, ScoreDict
 import config
 
 

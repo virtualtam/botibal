@@ -3,7 +3,7 @@
 'Tests the quizz module'
 import os
 import unittest
-from quizz import Question, Quizz
+from minibal.quizz import Question, Quizz
 
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))

@@ -1,11 +1,11 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 'Botibal: a silly jabber bot'
-from jabberbot import botcmd
 import re
 import sys
-import fukung
-from minibal import MiniBal
+from jabberbot import botcmd
+from minibal.client import MiniBal
+from minibal import fukung
 import config
 
 

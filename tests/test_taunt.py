@@ -4,7 +4,7 @@
 import os
 import shutil
 import unittest
-from taunt import Tauntionary
+from minibal.taunt import Tauntionary
 
 TEST_DIR = os.path.dirname(os.path.realpath(__file__))
 TEST_REF = os.path.join(TEST_DIR, 'taunts')

@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 'MiniBal: a minimalist jabber bot'
-from jabberbot import JabberBot, botcmd
 import xmpp
 import datetime
 import re
-from taunt import Tauntionary
+from jabberbot import JabberBot, botcmd
+from minibal.taunt import Tauntionary
 
 # pylint: disable=too-many-public-methods,unused-argument
 class MiniBal(JabberBot):
