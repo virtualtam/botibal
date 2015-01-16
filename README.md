@@ -11,7 +11,7 @@ A Jabber bot that uses the JabberBot Python library
 virtualenv2 ENV
 source ENV/bin/activate
 pip install jabberbot
-pip install --pre xmpppy
+pip install git+https://github.com/ArchipelProject/xmpppy
 
 ## Usage
 ./botibal
