@@ -4,3 +4,7 @@ quizz/*
 *.log
 *.xml
 *.txt
+
+# Tests
+.coverage
+htmlcov
