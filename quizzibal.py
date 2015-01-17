@@ -1,12 +1,10 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 'Quizzibal: a silly jabber quizz bot'
-import datetime
-import os
 import re
 import sys
 from minibal.client import MiniBal
-from minibal.quizz import Quizz, QUIZZ_DIR, ScoreDict
+from minibal.quizz import Quizz, ScoreDict
 import config
 
 
@@ -16,7 +14,7 @@ class QuizziBal(MiniBal):
 
     def __init__(self, jid, password, nickname, admin_jid):
         super(QuizziBal, self).__init__(jid, password, nickname, admin_jid)
-        self.quizz = Quizz()
+        self.quizz = Quizz(self.db_conn)
         self.scores = ScoreDict()
         self.adding_question = False
         self.running = False
@@ -59,14 +57,8 @@ class QuizziBal(MiniBal):
 
     def add_question(self, message):
         'Adds a new quizz question'
-        filepath = os.path.join(
-            QUIZZ_DIR,
-            '{}.{}.qzz'.format(
-                self.get_sender_username(message),
-                datetime.datetime.now().strftime('%Y%m%d_%H%M%S')))
-
         lines = message.getBody().splitlines()
-        return self.quizz.add_question(lines[0], lines[1:], filepath)
+        return self.quizz.add_question(lines[0], lines[1:])
 
 
     def check_answer(self, matchobject, username):
@@ -94,9 +86,6 @@ class QuizziBal(MiniBal):
         if msg == "start":
             if self.running:
                 return 'The quizz is already running ^_^'
-
-            if not os.access(QUIZZ_DIR, os.F_OK):
-                return "Quizz directory does not exist, cannot proceed"
 
             self.running = True
             return self.quizz.ask_next_question()

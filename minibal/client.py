@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 'MiniBal: a minimalist jabber bot'
-import xmpp
 import datetime
 import re
+import sqlite3
 from jabberbot import JabberBot, botcmd
+import xmpp
 from minibal.taunt import Tauntionary
 
 # pylint: disable=too-many-public-methods,unused-argument
@@ -16,7 +17,8 @@ class MiniBal(JabberBot):
         self.admin_jid = admin_jid
         self.groupchat = None
         super(MiniBal, self).__init__(self.jid, self.password)
-        self.tauntionary = Tauntionary()
+        self.db_conn = sqlite3.connect('data.db')
+        self.tauntionary = Tauntionary(self.db_conn)
 
 
     def join_groupchat(self, room):
@@ -45,6 +47,7 @@ class MiniBal(JabberBot):
         'Logs out'
         if self.admin_jid in str(mess.getFrom()):
             self.quit()
+            self.db_conn.close()
             return "I quit!"
         else:
             usrnm = self.get_sender_username(mess)
@@ -90,8 +93,11 @@ class MiniBal(JabberBot):
         if name:
             taunt = '{}: '.format(name)
 
-        taunt += self.tauntionary.taunt()
-        return taunt
+        try:
+            taunt += self.tauntionary.taunt()
+            return taunt
+        except ValueError:
+            return 'The tauntionary is empty'
 
 
     @botcmd

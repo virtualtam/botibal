@@ -1,0 +1,69 @@
+# -*- coding: utf-8 -*-
+# pylint: disable=too-many-public-methods
+'Tests the fukung module'
+import re
+import unittest
+from minibal.fukung import Fukung, BASE_URL, REGEX
+from tests.utils import DBTestCase
+
+
+class TestFukung(DBTestCase):
+    'Kung-Fu!'
+    def setUp(self):
+        super(TestFukung, self).setUp()
+        self.fukung = Fukung(self.db_conn)
+
+    def test_init_empty_db(self):
+        'Check a DB is created with an empty "taunt" table'
+        self.assertEqual(self.fukung.link_ids, [])
+        self.assertEqual(
+            self.db_cur.execute('SELECT * FROM fukung').fetchall(), [])
+
+    def test_init_db(self):
+        'Load an existing DB'
+        self.db_cur.execute(
+            'INSERT INTO fukung VALUES(NULL,"0/test0.gif")')
+        self.db_conn.commit()
+        self.fukung = Fukung(self.db_conn)
+        self.assertEqual(self.fukung.link_ids,
+                         [(1, u'0/test0.gif')])
+
+    def test_add_link_id(self):
+        'Add new entries to the DB'
+        self.fukung.add_link_id('1/test1.jpg')
+        self.assertEqual(self.fukung.link_ids,
+                         [(1, u'1/test1.jpg')])
+        self.fukung.add_link_id('2/test2.png')
+        self.assertEqual(self.fukung.link_ids,
+                         [(1, u'1/test1.jpg'),
+                          (2, u'2/test2.png')])
+
+    def test_empty_link(self):
+        'Ensure an error is raised if the list is empty'
+        with self.assertRaises(ValueError):
+            self.fukung.get_link()
+
+    def test_add_link_url(self):
+        'Add a valid fukung link'
+        url = BASE_URL + '4/v4l1d.gif'
+        self.fukung.add_link_url(re.match(REGEX, url))
+        self.assertEqual(self.fukung.link_ids,
+                         [(1, u'4/v4l1d.gif')])
+
+    def test_add_bad_link_url(self):
+        'Add a valid fukung link'
+        url = BASE_URL + '/5/1nv4l1d'
+        with self.assertRaises(AttributeError):
+            self.fukung.add_link_url(re.match(REGEX, url))
+
+    def test_get_link(self):
+        'Ensure valid links are returned'
+        self.fukung.add_link_id('1/test1.jpg')
+        self.fukung.add_link_id('2/test2.png')
+        link = self.fukung.get_link()
+        self.assertEqual(type(link), str)
+        self.assertTrue(re.match(REGEX, link))
+
+
+if __name__ == '__main__':
+    unittest.main()

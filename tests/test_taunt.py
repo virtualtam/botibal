@@ -1,39 +1,52 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=too-many-public-methods
 'Tests the taunt module'
-import os
-import shutil
 import unittest
 from minibal.taunt import Tauntionary
-
-TEST_DIR = os.path.dirname(os.path.realpath(__file__))
-TEST_REF = os.path.join(TEST_DIR, 'taunts')
-TEST_FILE = os.path.join(TEST_DIR, 'tmp_taunts')
+from tests.utils import DBTestCase
 
 
-class TestTauntionary(unittest.TestCase):
+class TestTauntionary(DBTestCase):
     'Be nice!'
-
     def setUp(self):
-        shutil.copyfile(TEST_REF, TEST_FILE)
-        self.tauntionary = Tauntionary(TEST_FILE)
+        super(TestTauntionary, self).setUp()
+        self.tauntionary = Tauntionary(self.db_conn)
 
-    @classmethod
-    def tearDownClass(cls):
-        if os.path.isfile(TEST_FILE):
-            os.remove(TEST_FILE)
+    def test_init_empty_db(self):
+        'Check a DB is created with an empty "taunt" table'
+        self.assertEqual(self.tauntionary.taunts, [])
+        self.assertEqual(
+            self.db_cur.execute('SELECT * FROM taunt').fetchall(), [])
 
-    def test_load_from_file(self):
-        'Load taunts from a text file'
-        self.assertEqual(len(self.tauntionary.taunts), 3)
+    def test_init_db(self):
+        'Load an existing DB'
+        self.db_cur.execute(
+            'INSERT INTO taunt VALUES(NULL,"h4xx0r","rtfm, n00b!")')
+        self.db_conn.commit()
+        self.tauntionary = Tauntionary(self.db_conn)
+        self.assertEqual(self.tauntionary.taunts,
+                         [(1, u'h4xx0r', u'rtfm, n00b!')])
 
-    def test_add_and_save_taunt(self):
-        'Add a new taunt and save the file'
-        self.tauntionary.add_taunt('Python, do you speak it, mofo?')
-        self.assertEqual(len(self.tauntionary.taunts), 4)
+    def test_add_taunt(self):
+        'Add new entries to the DB'
+        self.tauntionary.add_taunt("imah firin' mah laser!", "whoop")
+        self.assertEqual(self.tauntionary.taunts,
+                         [(1, u'whoop', u"imah firin' mah laser!")])
+        self.tauntionary.add_taunt("you say what what?", "butters")
+        self.assertEqual(self.tauntionary.taunts,
+                         [(1, u'whoop', u"imah firin' mah laser!"),
+                          (2, u'butters', u'you say what what?')])
 
-        self.tauntionary = Tauntionary(TEST_FILE)
-        self.assertEqual(len(self.tauntionary.taunts), 4)
+    def test_empty_taunt(self):
+        'Ensure an error is raised if the list is empty'
+        with self.assertRaises(ValueError):
+            self.tauntionary.taunt()
+
+    def test_taunt(self):
+        'Ensure Unicode strings are returned'
+        self.tauntionary.add_taunt("imah firin' mah laser!", "whoop")
+        self.tauntionary.add_taunt("you say what what?", "butters")
+        self.assertEqual(type(self.tauntionary.taunt()), unicode)
 
 
 if __name__ == '__main__':

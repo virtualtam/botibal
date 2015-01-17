@@ -5,23 +5,25 @@ import re
 import sys
 from jabberbot import botcmd
 from minibal.client import MiniBal
-from minibal import fukung
+from minibal.fukung import Fukung, REGEX
 import config
 
 
 # pylint: disable=too-many-public-methods
 class BotiBal(MiniBal):
     'A silly fukung-addict jabber bot'
-    __fails = dict()
-
+    def __init__(self, jid, password, nickname, admin_jid):
+        super(BotiBal, self).__init__(jid, password, nickname, admin_jid)
+        self.fukung = Fukung(self.db_conn)
+        self.__fails = dict()
 
     def unknown_command(self, mess, cmd, args):
         if self.get_sender_username(mess) == self.nickname:
             return
 
-        matches = re.search(fukung.REGEX, mess.getBody())
+        matches = re.search(REGEX, mess.getBody())
         if matches:
-            fukung.append(matches)
+            self.fukung.add_link_url(matches)
             return
 
         return self.failsHandler(mess)
@@ -114,9 +116,9 @@ class BotiBal(MiniBal):
     def _fshow(self, mess, args):
         'Gives an almost random image url from fukung'
         if args == 'dump':
-            return fukung.read(method=args)
+            return str(self.fukung)
 
-        return fukung.read()
+        return self.fukung.get_link()
 
 
 if __name__ == '__main__':

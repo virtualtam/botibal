@@ -2,34 +2,44 @@
 'I swear...'
 import random
 
-TAUNT_FILE = 'taunts.txt'
-
 
 class Tauntionary(object):
     'A nice collection of charming sentences'
-    def __init__(self, filepath=TAUNT_FILE):
-        self.taunt_file = filepath
+    def __init__(self, database_connection):
         self.taunts = []
-        self.load_file()
+        self.db_conn = database_connection
+        self.db_cur = self.db_conn.cursor()
+        self.init_db()
 
-    def add_taunt(self, taunt):
+    def __repr__(self):
+        # pylint: disable=star-args
+        return '\n'.join(['{} - {} ({})'.format(*taunt)
+                          for taunt in self.taunts])
+
+    def init_db(self):
+        """
+        Initializes DB interaction:
+        - creates table if necessary,
+        - loads data.
+        """
+        self.db_cur.execute(
+            '''CREATE TABLE  IF NOT EXISTS taunt (
+            id INTEGER PRIMARY KEY,
+            nick TEXT,
+            text TEXT)''')
+        self.db_conn.commit()
+        self.load_from_db()
+
+    def load_from_db(self):
+        'Loads taunts from the database'
+        self.taunts = self.db_cur.execute('SELECT * FROM taunt').fetchall()
+
+    def add_taunt(self, taunt, nick):
         'Adds a new taunt'
-        self.taunts.append(taunt)
-        self.save_file()
+        self.db_cur.execute('INSERT INTO taunt VALUES(NULL,?,?)', (nick, taunt))
+        self.db_conn.commit()
+        self.load_from_db()
 
     def taunt(self):
         'You piece of...'
-        return self.taunts[random.randint(0, len(self.taunts) - 1)]
-
-    def load_file(self):
-        'Loads taunts from the given file'
-        try:
-            with open(self.taunt_file) as f_taunts:
-                self.taunts = f_taunts.read().splitlines()
-        except IOError:
-            print 'No file found'
-
-    def save_file(self):
-        'Saves taunts in a file'
-        with open(self.taunt_file, 'w') as f_taunts:
-            f_taunts.write('\n'.join(self.taunts))
+        return self.taunts[random.randint(0, len(self.taunts) - 1)][2]

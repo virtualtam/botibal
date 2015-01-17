@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 'Quizz module'
-import datetime
-import os
 import random
-
-
-QUIZZ_DIR = 'quizz'
 
 
 class ScoreDict(dict):
@@ -17,12 +12,10 @@ class ScoreDict(dict):
         else:
             self[username] = score
 
-
     def reset(self):
         'Resets the scores for all users'
         for username in self:
             self[username] = 0
-
 
     def results(self):
         'Displays the scores'
@@ -30,90 +23,76 @@ class ScoreDict(dict):
                           for user, score in self.items()])
 
 
-class Question(object):
-    'Represents a question and its possible answers'
-    def __init__(self, question, answers, filepath=None):
-        self.question = question
-        self.answers = answers
-        if filepath:
-            self.filepath = filepath
-        else:
-            self.filepath = '{}.quizz'.format(
-                datetime.datetime.now().strftime('%Y%m%d_%H%M%S'))
-
-
-    def save_to_file(self):
-        'Writes a question to the corresponding file'
-        with open(self.filepath, 'w') as f_question:
-            f_question.write('{}\n'.format(self.question))
-            f_question.write('\n'.join(self.answers))
-
-
-    def check_answer(self, answer):
-        'Checks if an answer is suitable'
-        if answer.lower() in [ans.lower() for ans in self.answers]:
-            return True
-        return False
-
-
 class Quizz(object):
     'Quizz handling'
-    def __init__(self, quizz_dir=QUIZZ_DIR):
-        self.questions = list()
+    def __init__(self, database_connection):
+        self.questions = {}
         self.current_question = None
-        self.quizz_dir = quizz_dir
-        self.load_from_dir()
+        self.db_conn = database_connection
+        self.db_cur = self.db_conn.cursor()
+        self.init_db()
 
+    def init_db(self):
+        """
+        Initializes DB interaction:
+        - creates tables if necessary,
+        - loads data.
+        """
+        self.db_cur.execute(
+            '''CREATE TABLE IF NOT EXISTS question (
+            id INTEGER PRIMARY KEY,
+            text TEXT)''')
+        self.db_cur.execute(
+            '''CREATE TABLE IF NOT EXISTS answer (
+            id INTEGER PRIMARY KEY,
+            question_id INTEGER,
+            text TEXT,
+            FOREIGN KEY(question_id) REFERENCES question(id))''')
+        self.db_conn.commit()
+        self.load_from_db()
 
-    def load_from_dir(self):
-        'Loads questions from files in the quizz directory'
-        for path in [os.path.join(self.quizz_dir, f)
-                     for f in os.listdir(self.quizz_dir)
-                     if os.path.isfile(os.path.join(self.quizz_dir, f))]:
+    def load_from_db(self):
+        'Loads questions and answers from the database'
+        for q_id, q_text in self.db_cur.execute(
+                'SELECT id, text FROM question').fetchall():
+            ans = self.db_cur.execute(
+                'SELECT id, text FROM answer WHERE question_id=?', (q_id,)
+            ).fetchall()
+            self.questions[q_id] = {'text': q_text, 'answers': ans}
 
-            with open(path) as f_question:
-                lines = f_question.read().splitlines()
-                try:
-                    self.questions.append(Question(lines[0], lines[1:], path))
-                except IndexError:
-                    continue
-
-
-    def add_question(self, question, answers, filepath=None):
+    def add_question(self, question, answers):
         'Adds a new question'
-        que = Question(question, answers, filepath)
-        self.questions.append(que)
-        que.save_to_file()
-        return 'Added: {}'.format(que.filepath)
-
+        # TODO: handle empty values
+        self.db_cur.execute('INSERT INTO question VALUES(NULL,?)', (question,))
+        self.db_conn.commit()
+        q_id, = self.db_cur.execute(
+            'SELECT id FROM question ORDER BY id DESC LIMIT 1').fetchone()
+        for ans in answers:
+            self.db_cur.execute('INSERT INTO answer VALUES(NULL,?,?)',
+                                (q_id, ans))
+        self.db_conn.commit()
+        self.load_from_db()
 
     def delete_question(self, index):
-        'Deletes a question'
-        try:
-            filepath = self.questions[index].filepath
-        except IndexError:
-            return 'Wrong index: {}'.format(index)
-
-        if os.path.isfile(filepath):
-            os.remove(filepath)
+        'Deletes a question and its answers'
+        self.db_cur.execute('DELETE FROM answer WHERE question_id=?', (index,))
+        self.db_cur.execute('DELETE FROM question WHERE id=?', (index,))
+        self.db_conn.commit()
         del self.questions[index]
-
         return 'The question #{} has been deleted'.format(index)
-
 
     def list_questions(self):
         'Lists available questions'
         return '\n'.join(['{}. {}'.format(index, que.question)
                           for index, que in enumerate(self.questions)])
 
-
     def ask_next_question(self):
         'Asks a question'
         index = random.randint(0, len(self.questions) - 1)
-        self.current_question = self.questions[index]
-        return self.current_question.question
-
+        self.current_question = self.questions[self.questions.keys()[index]]
+        return self.current_question['text']
 
     def check_answer(self, answer):
         'Checks if an answer is suitable'
-        return self.current_question.check_answer(answer)
+        return answer.lower() in [ans[1].lower()
+                                  for ans in self.current_question['answers']]
