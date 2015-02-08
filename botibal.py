@@ -1,129 +1,90 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-'Botibal: a silly jabber bot'
+'Botibal: a silly XMPP bot'
+import codecs
+import logging
 import re
 import sys
-from jabberbot import botcmd
+
 from minibal.client import MiniBal
 from minibal.fukung import Fukung, REGEX
 import config
 
 
-# pylint: disable=too-many-public-methods
 class BotiBal(MiniBal):
-    'A silly fukung-addict jabber bot'
-    def __init__(self, jid, password, nickname, admin_jid):
-        super(BotiBal, self).__init__(jid, password, nickname, admin_jid)
-        self.fukung = Fukung(self.db_conn)
-        self.__fails = dict()
+    'A silly fukung-addict XMPP bot'
+    # pylint: disable=too-many-public-methods
 
-    def unknown_command(self, mess, cmd, args):
-        if self.get_sender_username(mess) == self.nickname:
+    def __init__(self, jid, password, nick, room, admin_jid):
+        # pylint: disable=too-many-arguments
+        super(BotiBal, self).__init__(jid, password, nick, room, admin_jid)
+        self.fukung = Fukung(self.db_conn)
+
+    def message(self, msg):
+        if msg['mucnick'] == self.nick:
             return
 
-        matches = re.search(REGEX, mess.getBody())
+        if msg['type'] not in ('chat', 'normal'):
+            return
+
+        super(BotiBal, self).message(msg)
+
+        cmd, args = self.parse_user_command(msg)
+        if cmd is None:
+            return
+
+        if cmd == 'fukung':
+            try:
+                self.say_group(self.fukung.get_link())
+            except ValueError:
+                msg.reply('no existing link').send()
+
+        elif cmd == 'fukung_add':
+            matches = re.search(REGEX, args)
+            if matches:
+                self.fukung.add_link_url(matches)
+
+        elif cmd == 'fukung_list':
+            msg.reply(str(self.fukung)).send()
+
+        elif cmd == 'rot13':
+            msg.reply(codecs.encode(args, 'rot_13')).send()
+
+    def muc_message(self, msg):
+        if msg['mucnick'] == self.nick:
+            return
+
+        super(BotiBal, self).muc_message(msg)
+
+        # parse the messages to find fukung links
+        matches = re.search(REGEX, msg['body'])
         if matches:
             self.fukung.add_link_url(matches)
             return
 
-        return self.failsHandler(mess)
+        cmd, args = self.parse_muc_command(msg)
 
-    def failsHandler(self, mess):
-        'Handles "fail" events'
-        matches = re.search('(' + self.nickname + r': )?fails add (\w+)',
-                            mess.getBody())
-        if matches:
-            return self.failcount('add', matches.group(2))
+        if cmd == 'fukung':
+            try:
+                self.say_group(self.fukung.get_link())
+            except ValueError:
+                self.say_group('the list is empty! plz browse dah internetz!')
 
-        matches = re.search(
-            '(' + self.nickname + r': )?fails( dump)? ?(\w+@\w+\.\w+)?',
-            mess.getBody())
-        if matches:
-            if matches.group(3):
-                if matches.group(2):
-                    return self.failcount(matches.group(2),
-                                          matches.group(3))
-
-                return self.failcount('dump', matches.group(3))
-
-            if matches.group(2):
-                return self.failcount(matches.group(2), 'all')
-
-        matches = re.search(
-            '(' + self.nickname + r'(:|,)? )(failcount|fails|fail)\+\+',
-            mess.getBody())
-        if matches:
-            return self.failcount('add', self.get_sender_username(mess))
-
-        matches = re.search(
-            '('+self.nickname+'(:|,)? )(failcount|fails|fail)--',
-            mess.getBody())
-        if matches:
-            return self.failcount(
-                'del', self.get_sender_username(mess))
-
-        return None
-
-
-    def failcount(self, method, user):
-        'How many fails?'
-        if method == 'dump' and self.__fails != None:
-            if user == 'all':
-                msg = 'Fails: \n'
-                for i in self.__fails.keys():
-                    msg += i +': %d\n' % (self.__fails[i])
-                return msg
-            else:
-                msg = user +'\'s failcount: %d' % (self.__fails[user])
-                if self.__fails[user] >= 5:
-                    msg += ' \n'+user+' shall now use a new name'
-                return msg
-        else:
-            if method == 'add' and user != 'all':
-                if user in self.__fails:
-                    self.__fails[user] += 1
-                    return self.failcount('dump', user)
-                else:
-                    self.__fails[user] = 1
-                    return self.failcount('dump', user)
-            else:
-                if method == 'del' and user != 'all':
-                    if user in self.__fails and self.__fails[user] >= 1:
-                        self.__fails[user] -= 1
-                        return self.failcount('dump', user)
-                    else:
-                        return 'Error: failcount < 0 or unknown user'
-                else:
-                    return None
-
-    @botcmd
-    def fails(self, mess, args):
-        'Displays fails'
-        usrnm = str(self.get_sender_username(mess))
-        if re.match('^_(.)*', args):
-            return 'Do not try to unleash the infinite fury, {}!'.format(usrnm)
-
-        return self.failcount('dump', 'all')
-
-    @botcmd
-    def _rot13(self, mess, args):
-        'Returns passed arguments rot13ed'
-        usrnm = str(self.get_sender_username(mess))
-        return '{}: {}'.format(usrnm, args.encode('rot13'))
-
-
-    @botcmd
-    def _fshow(self, mess, args):
-        'Gives an almost random image url from fukung'
-        if args == 'dump':
-            return str(self.fukung)
-
-        return self.fukung.get_link()
+        elif cmd == 'rot13':
+            self.say_group(codecs.encode(args, 'rot_13'))
 
 
 if __name__ == '__main__':
-    #dirty fix, but needed to use unicode…
-    reload(sys)
-    sys.setdefaultencoding("utf-8")
-    BOT = BotiBal(config.JID, config.PASSWORD, 'Botibal', config.ADMIN_JID)
-    BOT.serve_forever()
+    if sys.version_info < (3, 0):
+        from sleekxmpp.util.misc_ops import setdefaultencoding
+        setdefaultencoding('utf8')
+
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(levelname)-8s %(message)s')
+
+    BOT = BotiBal(config.JID, config.PASSWORD, 'Botibal',
+                  config.ROOM, config.ADMIN_JID)
+    if BOT.connect():
+        BOT.process(block=True)
+    else:
+        print 'Unable to connect'

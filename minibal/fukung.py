@@ -16,9 +16,8 @@ class Fukung(object):
         self.init_db()
 
     def __repr__(self):
-        # pylint: disable=star-args
-        return '\n'.join(['{} - {}'.format(*link_id)
-                          for link_id in self.link_ids])
+        return '\n'.join(['{} - {}{}'.format(f_id, BASE_URL, f_link)
+                          for f_id, f_link in self.link_ids])
 
     def init_db(self):
         """

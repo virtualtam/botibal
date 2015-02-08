@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+'Botibal configuration'
 JID = 'imahbot@lulzse.cx'
 PASSWORD = 'OhGoshWhereAreTheKeys?'
+ROOM = '1408@dolph.im'
 ADMIN_JID = 'thecat@saw.it'

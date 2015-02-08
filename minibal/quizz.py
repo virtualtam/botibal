@@ -32,6 +32,10 @@ class Quizz(object):
         self.db_cur = self.db_conn.cursor()
         self.init_db()
 
+    def __repr__(self):
+        return '\n'.join(['{} - {}'.format(index, que['text'])
+                          for index, que in self.questions.iteritems()])
+
     def init_db(self):
         """
         Initializes DB interaction:
@@ -80,11 +84,6 @@ class Quizz(object):
         self.db_conn.commit()
         del self.questions[index]
         return 'The question #{} has been deleted'.format(index)
-
-    def list_questions(self):
-        'Lists available questions'
-        return '\n'.join(['{}. {}'.format(index, que.question)
-                          for index, que in enumerate(self.questions)])
 
     def ask_next_question(self):
         'Asks a question'

@@ -1,59 +1,59 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-'Quizzibal: a silly jabber quizz bot'
+'Quizzibal: a silly XMPP quizz bot'
+import logging
 import re
 import sys
+
 from minibal.client import MiniBal
 from minibal.quizz import Quizz, ScoreDict
 import config
 
 
-# pylint: disable=too-many-public-methods
 class QuizziBal(MiniBal):
-    'A jabber bot dedicated to quizzes'
+    'A quizzical XMPP bot'
+    # pylint: disable=too-many-public-methods
 
-    def __init__(self, jid, password, nickname, admin_jid):
-        super(QuizziBal, self).__init__(jid, password, nickname, admin_jid)
+    def __init__(self, jid, password, nick, room, admin_jid):
+        # pylint: disable=too-many-arguments
+        super(QuizziBal, self).__init__(jid, password, nick, room, admin_jid)
         self.quizz = Quizz(self.db_conn)
         self.scores = ScoreDict()
         self.adding_question = False
         self.running = False
 
+    def message(self, msg):
+        if msg['mucnick'] == self.nick:
+            return
 
-    def unknown_command(self, mess, cmd, args):
-        # add a new question
-        if self.adding_question and mess.getType() == 'chat':
-            self.adding_question = False
-            return self.add_question(mess)
+        if msg['type'] not in ('chat', 'normal'):
+            return
 
-        if re.search('^add$', mess.getBody()) and mess.getType() == 'chat':
-            self.adding_question = True
-            return 'Please type your question and its answers'
+        super(QuizziBal, self).message(msg)
 
-        # start/stop the quizz, display scores, skip the question
-        matches = re.search("^(" + self.nickname +\
-                            ")(( )?(: |, )?)(start|stop|score|next|reset)",
-                            mess.getBody())
-        if matches:
-            return self.control(matches)
+        cmd, args = self.parse_user_command(msg)
+        if cmd is None:
+            return
 
-        # check an answer
-        matches = re.search("^(" + self.nickname +\
-                            r")(( )?(: |, )?)((\w| |[\.,:éèçàêâûîôäëüïö'])+)",
-                            mess.getBody())
-        if matches:
-            return self.check_answer(matches, self.get_sender_username(mess))
+        if cmd == 'q_add':
+            q_set = args.split('#')
+            self.quizz.add_question(q_set[0], q_set[1:])
+            msg.reply('Question added: {}\nAnswers: {}'
+                      .format(q_set[0], q_set[1:])).send()
 
-        # list available questions
-        if re.search('^list$', mess.getBody()):
-            return self.quizz.list_questions()
+        elif cmd == 'q_del':
+            msg.reply(self.quizz.delete_question(int(args))).send()
 
+        elif cmd == 'q_list':
+            msg.reply(str(self.quizz)).send()
 
-        # delete a question
-        matches = re.search('^del ([1-9][0-9]*)', mess.getBody())
-        if matches:
-            return self.quizz.delete_question(int(matches.group(1)))
+    def muc_message(self, msg):
+        if msg['mucnick'] == self.nick:
+            return
 
+        super(QuizziBal, self).muc_message(msg)
+
+        self.say_group(self.control(msg))
 
     def add_question(self, message):
         'Adds a new quizz question'
@@ -78,37 +78,61 @@ class QuizziBal(MiniBal):
             username, answer)
 
 
-    def control(self, matchobject):
+    def control(self, msg):
         'Starts and stops quizz sessions'
-        # pylint: disable=too-many-return-statements
-        msg = matchobject.group(5)
+        cmd, _ = self.parse_muc_command(msg)
+        if cmd is None:
+            return
 
-        if msg == "start":
+        result = ''
+
+        if cmd == 'next':
+            result = self.quizz.ask_next_question()
+
+        elif cmd == 'reset':
+            self.scores.reset()
+            result = 'All scores have been reset!'
+
+        elif cmd == 'score':
+            result = self.scores.results()
+
+        elif cmd == 'start':
             if self.running:
                 return 'The quizz is already running ^_^'
 
             self.running = True
-            return self.quizz.ask_next_question()
+            result = self.quizz.ask_next_question()
 
-        if msg == "stop":
+        elif cmd == 'stop':
             self.running = False
-            return "Quizz stopped"
+            result = "Quizz stopped"
 
-        if msg == 'score':
-            return self.scores.results()
+        else:
+            if not self.running:
+                return
 
-        if msg == 'reset':
-            self.scores.reset()
-            return 'All scores have been reset!'
+            # check an answer
+            matches = re.search(
+                "^(" + self.nick +
+                r")(( )?(: |, )?)((\w| |[\.,:éèçàêâûîôäëüïö'])+)",
+                msg['body'])
+            if matches:
+                result = self.check_answer(matches, msg['mucnick'])
 
-        if msg == "next":
-            return self.quizz.ask_next_question()
+        return result
 
 
 if __name__ == '__main__':
-    # dirty fix, but needed to use unicode…
-    # pylint: disable=no-member
-    reload(sys)
-    sys.setdefaultencoding("utf-8")
-    BOT = QuizziBal(config.JID, config.PASSWORD, 'Quizzibal', config.ADMIN_JID)
-    BOT.serve_forever()
+    if sys.version_info < (3, 0):
+        from sleekxmpp.util.misc_ops import setdefaultencoding
+        setdefaultencoding('utf8')
+
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(levelname)-8s %(message)s')
+
+    BOT = QuizziBal(config.JID, config.PASSWORD, 'Quizzibal',
+                    config.ROOM, config.ADMIN_JID)
+    if BOT.connect():
+        BOT.process(block=True)
+    else:
+        print 'Unable to connect'

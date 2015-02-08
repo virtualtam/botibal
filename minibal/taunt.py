@@ -12,9 +12,8 @@ class Tauntionary(object):
         self.init_db()
 
     def __repr__(self):
-        # pylint: disable=star-args
-        return '\n'.join(['{} - {} ({})'.format(*taunt)
-                          for taunt in self.taunts])
+        return '\n'.join(['{} - {} ({})'.format(t_id, t_text, t_nick)
+                          for t_id, t_nick, t_text in self.taunts])
 
     def init_db(self):
         """
