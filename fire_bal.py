@@ -28,7 +28,6 @@ if __name__ == '__main__':
         from sleekxmpp.util.misc_ops import setdefaultencoding
         setdefaultencoding('utf8')
 
-
     logging.basicConfig(level=ARGS.loglevel,
                         format='%(levelname)-8s %(message)s')
 
@@ -44,7 +43,7 @@ if __name__ == '__main__':
         BOT = QuizziBal(config.JID, config.PASSWORD, 'Quizzibal',
                         config.ROOM, config.ADMIN_JID)
 
-    if BOT.connect():
+    if BOT.connect(use_tls=config.USE_TLS):
         BOT.process(block=True)
     else:
         print 'Unable to connect'

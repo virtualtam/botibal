@@ -16,55 +16,61 @@ class BotiBal(MiniBal):
         super(BotiBal, self).__init__(jid, password, nick, room, admin_jid)
         self.fukung = Fukung(self.db_conn)
 
-    def message(self, msg):
-        if msg['mucnick'] == self.nick:
-            return
+    def fukung_net(self, msg, args):
+        'Controls Fukung interactions'
+        try:
+            # message parser
+            if args.add:
+                matches = re.search(REGEX, args.add)
+                if matches:
+                    self.fukung.add_link_url(matches)
+                return
 
-        if msg['type'] not in ('chat', 'normal'):
-            return
+            elif args.list:
+                msg.reply('\n{}'.format(self.fukung)).send()
+                return
+        except AttributeError:
+            # MUC parser
+            pass
 
-        super(BotiBal, self).message(msg)
+        try:
+            self.say_group(self.fukung.get_link())
+        except ValueError:
+            self.say_group('da fukung list iz empty! plz browse da intarnetz!')
 
-        cmd, args = self.parse_user_command(msg)
-        if cmd is None:
-            return
+    def rot13(self, msg, args):
+        'Applies rot13 on the passed string'
+        # pylint: disable=unused-argument
+        self.say_group(codecs.encode(' '.join(args.text), 'rot_13'))
 
-        if cmd == 'fukung':
-            try:
-                self.say_group(self.fukung.get_link())
-            except ValueError:
-                msg.reply('no existing link').send()
+    def add_common_commands(self, subparser):
+        super(BotiBal, self).add_common_commands(subparser)
 
-        elif cmd == 'fukung_add':
-            matches = re.search(REGEX, args)
-            if matches:
-                self.fukung.add_link_url(matches)
+        p_rot13 = subparser.add_parser('rot13', help="returns a rot13'd string")
+        p_rot13.add_argument('text', type=str, nargs='+')
+        p_rot13.set_defaults(func=self.rot13)
 
-        elif cmd == 'fukung_list':
-            msg.reply(str(self.fukung)).send()
+    def add_message_commands(self, subparser):
+        super(BotiBal, self).add_message_commands(subparser)
 
-        elif cmd == 'rot13':
-            msg.reply(codecs.encode(args, 'rot_13')).send()
+        p_fukung = subparser.add_parser('fukung', help='manage Fukung links')
+        p_fukung.add_argument('-a', '--add', type=str,
+                              help='add a fukung link')
+        p_fukung.add_argument('-l', '--list', action='store_true',
+                              help='lists fukung links')
+        p_fukung.set_defaults(func=self.fukung_net)
 
-    def muc_message(self, msg):
-        if msg['mucnick'] == self.nick:
-            return
+    def add_muc_commands(self, subparser):
+        super(BotiBal, self).add_muc_commands(subparser)
 
-        super(BotiBal, self).muc_message(msg)
+        p_fukung = subparser.add_parser('fukung', help='manage Fukung links')
+        p_fukung.set_defaults(func=self.fukung_net)
+
+    def muc_hook(self, msg):
+        super(BotiBal, self).muc_hook(msg)
 
         # parse the messages to find fukung links
         matches = re.search(REGEX, msg['body'])
         if matches:
             self.fukung.add_link_url(matches)
-            return
-
-        cmd, args = self.parse_muc_command(msg)
-
-        if cmd == 'fukung':
-            try:
-                self.say_group(self.fukung.get_link())
-            except ValueError:
-                self.say_group('the list is empty! plz browse dah internetz!')
-
-        elif cmd == 'rot13':
-            self.say_group(codecs.encode(args, 'rot_13'))
+            return True

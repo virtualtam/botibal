@@ -2,6 +2,7 @@
 'Quizzibal: a silly XMPP quizz bot'
 import re
 
+from botibal.client.cmd_parser import BotCmdError, BotHelp
 from botibal.client.minibal import MiniBal
 from botibal.quizz import Quizz, ScoreDict
 
@@ -17,46 +18,6 @@ class QuizziBal(MiniBal):
         self.scores = ScoreDict()
         self.adding_question = False
         self.running = False
-
-    def message(self, msg):
-        # pylint: disable=duplicate-code
-        if msg['mucnick'] == self.nick:
-            return
-
-        if msg['type'] not in ('chat', 'normal'):
-            return
-
-        super(QuizziBal, self).message(msg)
-
-        cmd, args = self.parse_user_command(msg)
-        if cmd is None:
-            return
-
-        if cmd == 'q_add':
-            q_set = args.split('#')
-            self.quizz.add_question(q_set[0], q_set[1:])
-            msg.reply('Question added: {}\nAnswers: {}'
-                      .format(q_set[0], q_set[1:])).send()
-
-        elif cmd == 'q_del':
-            msg.reply(self.quizz.delete_question(int(args))).send()
-
-        elif cmd == 'q_list':
-            msg.reply(str(self.quizz)).send()
-
-    def muc_message(self, msg):
-        if msg['mucnick'] == self.nick:
-            return
-
-        super(QuizziBal, self).muc_message(msg)
-
-        self.say_group(self.control(msg))
-
-    def add_question(self, message):
-        'Adds a new quizz question'
-        lines = message.getBody().splitlines()
-        return self.quizz.add_question(lines[0], lines[1:])
-
 
     def check_answer(self, matchobject, username):
         'Handles user answers'
@@ -74,46 +35,92 @@ class QuizziBal(MiniBal):
         return "Sorry {}, {} is not the answer to my question.".format(
             username, answer)
 
+    def question(self, msg, args):
+        'Manages quizz questions'
+        if args.add:
+            q_set = (' '.join(args.add)).split('#')
+            self.quizz.add_question(q_set[0], q_set[1:])
+            msg.reply('Question added: {}\nAnswers: {}'
+                      .format(q_set[0], q_set[1:])).send()
 
-    def control(self, msg):
-        'Starts and stops quizz sessions'
-        cmd, _ = self.parse_muc_command(msg)
-        if cmd is None:
-            return
+        elif args.delete:
+            msg.reply(self.quizz.delete_question(int(args))).send()
 
-        result = ''
+        elif args.list:
+            msg.reply('\n{}'.format(self.quizz)).send()
 
-        if cmd == 'next':
-            result = self.quizz.ask_next_question()
+    def control_quizz(self, msg, args):
+        'Controls the running quizz'
+        # pylint: disable=unused-argument
+        if args.action == 'next':
+            self.say_group(self.quizz.ask_next_question())
 
-        elif cmd == 'reset':
+        elif args.action == 'reset':
             self.scores.reset()
-            result = 'All scores have been reset!'
+            self.say_group('All scores have been reset!')
 
-        elif cmd == 'score':
-            result = self.scores.results()
+        elif args.action == 'score':
+            self.say_group('\nScores:\n{}'.format(self.scores.results()))
 
-        elif cmd == 'start':
+        elif args.action == 'start':
             if self.running:
-                return 'The quizz is already running ^_^'
-
-            self.running = True
-            result = self.quizz.ask_next_question()
-
-        elif cmd == 'stop':
-            self.running = False
-            result = "Quizz stopped"
-
-        else:
-            if not self.running:
+                self.say_group('The quizz is already running ^_^')
                 return
 
-            # check an answer
+            self.running = True
+            self.say_group(self.quizz.ask_next_question())
+
+        elif args.action == 'stop':
+            self.running = False
+            self.say_group('Quizz stopped')
+
+    def add_common_commands(self, subparser):
+        super(QuizziBal, self).add_common_commands(subparser)
+
+        p_quizz = subparser.add_parser('quizz', help='control quizzes')
+        p_quizz.add_argument(
+            'action', help='control action',
+            choices=['next', 'reset', 'score', 'start', 'stop'])
+        p_quizz.set_defaults(func=self.control_quizz)
+
+    def add_message_commands(self, subparser):
+        super(QuizziBal, self).add_message_commands(subparser)
+
+        p_que = subparser.add_parser('question', help='manage quizz questions')
+        p_que.add_argument('-a', '--add', type=str, nargs='+',
+                           help='add a new question to the quizz')
+        p_que.add_argument(
+            '-d', '--delete', type=int,
+            help='delete the question corresponding to the given ID')
+        p_que.add_argument('-l', '--list', action='store_true',
+                           help='lists all questions')
+        p_que.set_defaults(func=self.question)
+
+    def muc_hook(self, msg):
+        super(QuizziBal, self).muc_hook(msg)
+
+        if not self.running:
+            return False
+
+        # check if the answer is a valid command
+        try:
+            cmdline = re.sub(r'{}[ ]?[,:]? '.format(self.nick), '',
+                             msg['body'])
+            self.muc_cmd_parser.parse_args(cmdline.split(' '))
+
+        except BotHelp:
+            # user asked for help: proceed
+            return False
+
+        except BotCmdError:
+            # not a valid command: check as an answer
             matches = re.search(
-                "^(" + self.nick +
+                r"^(" + self.nick +
                 r")(( )?(: |, )?)((\w| |[\.,:éèçàêâûîôäëüïö'])+)",
                 msg['body'])
             if matches:
-                result = self.check_answer(matches, msg['mucnick'])
+                self.say_group(self.check_answer(matches, msg['mucnick']))
+            return True
 
-        return result
+        # user emitted a valid command: proceed
+        return False

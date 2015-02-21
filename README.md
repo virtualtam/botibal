@@ -28,8 +28,26 @@ optional arguments:
   -m, --minibal    MiniBal, the minimalist bot
   -q, --quizzibal  QuizziBal, the quizzical bot
 
-## Available commands [WIP]
-Some commands are available in the MUC, some via PM, some via PM for the admin
-only...
-The code is under heavy rewrite, which includes command/argument parsing.
-Once this has been done, managing and using the bot will be much easier ;-)
+## Available commands
+Once the bot is online and connected to a groupchat, you can:
+* get help for MUC commands
+ * list all available commands
+   `<bot_nick>: -h`
+ * get help for a given command
+   `<bot_nick>: <command> -h`
+* execute MUC commands
+  `<bot_nick>: command [args]`
+* get help for PM commands
+ * list all available commands
+  `-h`
+ * get help for a given command
+   `<command> -h`
+* execute PM commands
+  `command [args]
+
+The available commands depend on which bot is running, and are split as follows:
+* MUC: command execution (say/display something)
+* PM: bot admin
+ * add, delete and list elements
+ * change bot status
+ * execute "hidden" MUC commands
