@@ -1,14 +1,10 @@
-#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 'Botibal: a silly XMPP bot'
 import codecs
-import logging
 import re
-import sys
 
-from minibal.client import MiniBal
-from minibal.fukung import Fukung, REGEX
-import config
+from botibal.client.minibal import MiniBal
+from botibal.fukung import Fukung, REGEX
 
 
 class BotiBal(MiniBal):
@@ -72,19 +68,3 @@ class BotiBal(MiniBal):
 
         elif cmd == 'rot13':
             self.say_group(codecs.encode(args, 'rot_13'))
-
-
-if __name__ == '__main__':
-    if sys.version_info < (3, 0):
-        from sleekxmpp.util.misc_ops import setdefaultencoding
-        setdefaultencoding('utf8')
-
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(levelname)-8s %(message)s')
-
-    BOT = BotiBal(config.JID, config.PASSWORD, 'Botibal',
-                  config.ROOM, config.ADMIN_JID)
-    if BOT.connect():
-        BOT.process(block=True)
-    else:
-        print 'Unable to connect'

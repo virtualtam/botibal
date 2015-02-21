@@ -6,7 +6,7 @@ import sqlite3
 
 from sleekxmpp import ClientXMPP
 
-from minibal.taunt import Tauntionary
+from botibal.taunt import Tauntionary
 
 class MiniBal(ClientXMPP):
     'Minimalist XMPP bot'

@@ -1,13 +1,9 @@
-#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 'Quizzibal: a silly XMPP quizz bot'
-import logging
 import re
-import sys
 
-from minibal.client import MiniBal
-from minibal.quizz import Quizz, ScoreDict
-import config
+from botibal.client.minibal import MiniBal
+from botibal.quizz import Quizz, ScoreDict
 
 
 class QuizziBal(MiniBal):
@@ -23,6 +19,7 @@ class QuizziBal(MiniBal):
         self.running = False
 
     def message(self, msg):
+        # pylint: disable=duplicate-code
         if msg['mucnick'] == self.nick:
             return
 
@@ -120,19 +117,3 @@ class QuizziBal(MiniBal):
                 result = self.check_answer(matches, msg['mucnick'])
 
         return result
-
-
-if __name__ == '__main__':
-    if sys.version_info < (3, 0):
-        from sleekxmpp.util.misc_ops import setdefaultencoding
-        setdefaultencoding('utf8')
-
-    logging.basicConfig(level=logging.DEBUG,
-                        format='%(levelname)-8s %(message)s')
-
-    BOT = QuizziBal(config.JID, config.PASSWORD, 'Quizzibal',
-                    config.ROOM, config.ADMIN_JID)
-    if BOT.connect():
-        BOT.process(block=True)
-    else:
-        print 'Unable to connect'

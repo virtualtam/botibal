@@ -2,7 +2,7 @@
 # pylint: disable=too-many-public-methods
 'Tests the taunt module'
 import unittest
-from minibal.taunt import Tauntionary
+from botibal.taunt import Tauntionary
 from tests.utils import DBTestCase
 
 

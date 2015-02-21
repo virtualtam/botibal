@@ -1,10 +1,7 @@
 # Botibal
 config.py
-quizz/*
 *.db
 *.log
-*.xml
-*.txt
 
 # Tests
 .coverage

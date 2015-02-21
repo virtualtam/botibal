@@ -3,7 +3,7 @@
 'Tests the fukung module'
 import re
 import unittest
-from minibal.fukung import Fukung, BASE_URL, REGEX
+from botibal.fukung import Fukung, BASE_URL, REGEX
 from tests.utils import DBTestCase
 
 

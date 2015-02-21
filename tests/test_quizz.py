@@ -2,7 +2,7 @@
 # pylint: disable=too-many-public-methods
 'Tests the quizz module'
 import unittest
-from minibal.quizz import Quizz
+from botibal.quizz import Quizz
 from tests.utils import DBTestCase
 
 
