@@ -66,7 +66,12 @@ class Quizz(object):
 
     def add_question(self, question, answers):
         'Adds a new question'
-        # TODO: handle empty values
+        if question is None or question == '':
+            raise ValueError('Empty question')
+
+        if answers is None or answers == [] or answers == ['']:
+            raise ValueError('No answers specified')
+
         self.db_cur.execute('INSERT INTO question VALUES(NULL,?)', (question,))
         self.db_conn.commit()
         q_id, = self.db_cur.execute(

@@ -18,9 +18,25 @@ class TestQuizz(DBTestCase):
         self.qzz = Quizz(self.db_conn)
 
     def test_add_question(self):
-        'Add a question (saved to a file)'
+        'Add a question'
         self.qzz.add_question(self.question, self.answers)
         self.assertEqual(len(self.qzz.questions), 1)
+
+    def test_add_empty_question(self):
+        'Attempt to add an empty question'
+        with self.assertRaises(ValueError):
+            self.qzz.add_question('', self.answers)
+        with self.assertRaises(ValueError):
+            self.qzz.add_question(None, self.answers)
+
+    def test_add_empty_answers(self):
+        'Attempt to add a question with no answers'
+        with self.assertRaises(ValueError):
+            self.qzz.add_question(self.question, [])
+        with self.assertRaises(ValueError):
+            self.qzz.add_question(self.question, [''])
+        with self.assertRaises(ValueError):
+            self.qzz.add_question(self.question, None)
 
     def test_delete_question(self):
         'Add and delete a question'

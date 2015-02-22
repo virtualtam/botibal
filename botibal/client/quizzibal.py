@@ -39,9 +39,12 @@ class QuizziBal(MiniBal):
         'Manages quizz questions'
         if args.add:
             q_set = (' '.join(args.add)).split('#')
-            self.quizz.add_question(q_set[0], q_set[1:])
-            msg.reply('Question added: {}\nAnswers: {}'
-                      .format(q_set[0], q_set[1:])).send()
+            try:
+                self.quizz.add_question(q_set[0], q_set[1:])
+                msg.reply('Question added: {}\nAnswers: {}'
+                          .format(q_set[0], q_set[1:])).send()
+            except ValueError, err:
+                msg.reply('error: {}'.format(err)).send()
 
         elif args.delete:
             msg.reply(self.quizz.delete_question(int(args))).send()
