@@ -11,9 +11,11 @@ class BotiBal(MiniBal):
     'A silly fukung-addict XMPP bot'
     # pylint: disable=too-many-public-methods
 
-    def __init__(self, jid, password, nick, room, admin_jid):
+    def __init__(self, jid, password, nick, room, admin_jid,
+                 database='data.db'):
         # pylint: disable=too-many-arguments
-        super(BotiBal, self).__init__(jid, password, nick, room, admin_jid)
+        super(BotiBal, self).__init__(
+            jid, password, nick, room, admin_jid, database)
         self.fukung = Fukung(self.db_conn)
 
     def fukung_net(self, msg, args):

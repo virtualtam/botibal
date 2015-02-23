@@ -28,7 +28,8 @@ class MiniBal(ClientXMPP):
     'A minimalist XMPP bot'
     # pylint: disable=too-many-public-methods
 
-    def __init__(self, jid, password, nick, room, admin_jid):
+    def __init__(self, jid, password, nick, room, admin_jid,
+                 database='data.db'):
         # pylint: disable=too-many-arguments
         super(MiniBal, self).__init__(jid, password)
         self.room = room
@@ -47,7 +48,7 @@ class MiniBal(ClientXMPP):
         self.register_plugin('xep_0045')  # Multi-User Chat
         self.register_plugin('xep_0199')  # XMPP Ping
 
-        self.db_conn = sqlite3.connect('data.db', check_same_thread=False)
+        self.db_conn = sqlite3.connect(database, check_same_thread=False)
         self.tauntionary = Tauntionary(self.db_conn)
 
     def session_start(self, event):

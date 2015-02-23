@@ -62,6 +62,16 @@ class TestFukung(DBTestCase):
         with self.assertRaises(AttributeError):
             self.fukung.add_link_url(re.match(REGEX, url))
 
+    def test_repr(self):
+        'Display the list as a string'
+        self.fukung.add_link_id('1/test1.jpg')
+        self.assertEqual(str(self.fukung),
+                         '1 - http://www.fukung.net/v/1/test1.jpg')
+        self.fukung.add_link_id('2/test2.png')
+        self.assertEqual(str(self.fukung),
+                         '1 - http://www.fukung.net/v/1/test1.jpg\n'
+                         '2 - http://www.fukung.net/v/2/test2.png')
+
     def test_get_link(self):
         'Ensure valid links are returned'
         self.fukung.add_link_id('1/test1.jpg')

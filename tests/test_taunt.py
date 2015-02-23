@@ -62,6 +62,16 @@ class TestTauntionary(DBTestCase):
         with self.assertRaises(ValueError):
             self.tauntionary.taunt()
 
+    def test_repr(self):
+        'Display the Tauntionary as a string'
+        self.tauntionary.add_taunt("imah firin' mah laser!", "whoop")
+        self.assertEqual(str(self.tauntionary),
+                         "1 - imah firin' mah laser! (whoop)")
+        self.tauntionary.add_taunt("you say what what?", "butters")
+        self.assertEqual(str(self.tauntionary),
+                         "1 - imah firin' mah laser! (whoop)\n"
+                         "2 - you say what what? (butters)")
+
     def test_taunt(self):
         'Ensure Unicode strings are returned'
         self.tauntionary.add_taunt("imah firin' mah laser!", "whoop")

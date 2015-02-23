@@ -11,9 +11,11 @@ class QuizziBal(MiniBal):
     'A quizzical XMPP bot'
     # pylint: disable=too-many-public-methods
 
-    def __init__(self, jid, password, nick, room, admin_jid):
+    def __init__(self, jid, password, nick, room, admin_jid,
+                 database='data.db'):
         # pylint: disable=too-many-arguments
-        super(QuizziBal, self).__init__(jid, password, nick, room, admin_jid)
+        super(QuizziBal, self).__init__(
+            jid, password, nick, room, admin_jid, database)
         self.quizz = Quizz(self.db_conn)
         self.scores = ScoreDict()
         self.adding_question = False

@@ -7,6 +7,8 @@ class ScoreDict(dict):
     '''Stores the game's scores'''
     def add_score(self, username, score):
         'Adds a new score for a given user'
+        score = int(score)
+
         if username in self:
             self[username] += score
         else:
