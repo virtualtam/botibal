@@ -4,8 +4,7 @@ PYLINT = pylint
 PYLINTFLAGS = -rn --disable=locally-disabled
 PYTHONFILES := $(shell find . -name '*.py')
 
-.PHONY: clean distclean coverage lint pep8 pylint test
-all: clean distclean coverage lint pep8 pylint test
+all: lint coverage
 
 clean:
 	@find . -name "*.pyc" -delete
@@ -14,8 +13,10 @@ distclean:
 	@git clean -xdf
 
 coverage: clean
+	@echo "=== Coverage ==="
 	@rm -rf htmlcov
 	@coverage run --source=botibal -m unittest discover -s tests
+	@coverage report
 	@coverage html
 
 lint: pylint pep8
@@ -30,3 +31,7 @@ pylint: clean
 
 test: clean
 	@python -m unittest discover -s tests
+
+travis_coverage:
+	@coverage run --source=botibal -m unittest discover -s tests
+	@coverage report

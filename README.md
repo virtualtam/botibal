@@ -1,5 +1,7 @@
 # Botibal
 
+[![Build Status](https://travis-ci.org/virtualtam/botibal.png?branch=master)](http://travis-ci.org/virtualtam/botibal)
+
 A silly, quizzical XMPP bot that uses the [SleekXMPP](https://github.com/fritzy/SleekXMPP) Python library.
 
 ## Available bots
