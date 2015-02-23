@@ -22,7 +22,6 @@ A silly, quizzical XMPP bot that uses the [SleekXMPP](https://github.com/fritzy/
 ## Usage
 ```bash
 $ ./fire_bal.py  [-h] [-d] (-b | -m | -q)
-```
 
 optional arguments:
   -h, --help       show this help message and exit
@@ -30,6 +29,7 @@ optional arguments:
   -b, --botibal    BotiBal, the Fukung-addict bot
   -m, --minibal    MiniBal, the minimalist bot
   -q, --quizzibal  QuizziBal, the quizzical bot
+```
 
 ## Available commands
 Once the bot is online and connected to a groupchat, you can:
