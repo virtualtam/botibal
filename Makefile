@@ -1,3 +1,4 @@
+PACKAGE=botibal
 PEP8 = pep8
 PEP8FLAGS = --count --statistics --max-line-length=80
 PYLINT = pylint
@@ -12,11 +13,13 @@ clean:
 distclean:
 	@git clean -xdf
 
-coverage: clean
+basic_coverage: clean
 	@echo "=== Coverage ==="
-	@rm -rf htmlcov
-	@coverage run --source=botibal -m unittest discover -s tests
+	@coverage run --source=$(PACKAGE) -m unittest discover -s tests
 	@coverage report
+
+coverage: clean basic_coverage
+	@rm -rf htmlcov
 	@coverage html
 
 lint: pylint pep8
@@ -31,7 +34,3 @@ pylint: clean
 
 test: clean
 	@python -m unittest discover -s tests
-
-travis_coverage:
-	@coverage run --source=botibal -m unittest discover -s tests
-	@coverage report
