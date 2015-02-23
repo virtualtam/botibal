@@ -38,6 +38,12 @@ class TestFukung(DBTestCase):
                          [(1, u'1/test1.jpg'),
                           (2, u'2/test2.png')])
 
+    def test_add_duplicate_link_id(self):
+        'Attempt to add the same link twice'
+        self.fukung.add_link_id('1/test1.jpg')
+        with self.assertRaises(ValueError):
+            self.fukung.add_link_id('1/test1.jpg')
+
     def test_empty_link(self):
         'Ensure an error is raised if the list is empty'
         with self.assertRaises(ValueError):

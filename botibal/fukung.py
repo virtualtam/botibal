@@ -46,7 +46,9 @@ class Fukung(object):
 
     def add_link_id(self, link_id):
         'Adds a new link id'
-        # TODO: check duplicates
+        if link_id in [lid for _, lid in self.link_ids]:
+            raise ValueError('Duplicate Fukung link')
+
         self.db_cur.execute('INSERT INTO fukung VALUES(NULL,?)', (link_id,))
         self.db_conn.commit()
         self.load_from_db()

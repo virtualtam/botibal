@@ -23,7 +23,10 @@ class BotiBal(MiniBal):
             if args.add:
                 matches = re.search(REGEX, args.add)
                 if matches:
-                    self.fukung.add_link_url(matches)
+                    try:
+                        self.fukung.add_link_url(matches)
+                    except ValueError, err:
+                        msg.reply('error: {}'.format(err)).send()
                 return
 
             elif args.list:
@@ -72,5 +75,12 @@ class BotiBal(MiniBal):
         # parse the messages to find fukung links
         matches = re.search(REGEX, msg['body'])
         if matches:
-            self.fukung.add_link_url(matches)
+            try:
+                self.fukung.add_link_url(matches)
+            except ValueError:
+                # don't print anything!
+                # users are entitled to post the same link twice, thrice...
+                pass
             return True
+
+        return False
