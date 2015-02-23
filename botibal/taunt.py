@@ -35,6 +35,15 @@ class Tauntionary(object):
 
     def add_taunt(self, taunt, nick):
         'Adds a new taunt'
+        if taunt is None or taunt == '':
+            raise ValueError('Empty taunt')
+
+        if nick is None or nick == '':
+            raise ValueError('Taunt: empty user nickname')
+
+        if taunt in [text for _, _, text in self.taunts]:
+            raise ValueError('This taunt already exists!')
+
         self.db_cur.execute('INSERT INTO taunt VALUES(NULL,?,?)', (nick, taunt))
         self.db_conn.commit()
         self.load_from_db()

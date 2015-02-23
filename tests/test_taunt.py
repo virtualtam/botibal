@@ -37,7 +37,27 @@ class TestTauntionary(DBTestCase):
                          [(1, u'whoop', u"imah firin' mah laser!"),
                           (2, u'butters', u'you say what what?')])
 
-    def test_empty_taunt(self):
+    def test_add_empty_taunt(self):
+        'attempt to add an empty taunt'
+        with self.assertRaises(ValueError):
+            self.tauntionary.add_taunt(None, 'void')
+        with self.assertRaises(ValueError):
+            self.tauntionary.add_taunt('', 'void')
+
+    def test_add_taunt_with_empty_nick(self):
+        'Attempt to add a taunt for a void user'
+        with self.assertRaises(ValueError):
+            self.tauntionary.add_taunt('shoop', None)
+        with self.assertRaises(ValueError):
+            self.tauntionary.add_taunt('whoop', '')
+
+    def test_add_duplicate_taunt(self):
+        'Attempt to add the same taunt twice'
+        self.tauntionary.add_taunt("imah firin' mah laser!", "whoop")
+        with self.assertRaises(ValueError):
+            self.tauntionary.add_taunt("imah firin' mah laser!", "whoop")
+
+    def test_empty_taunt_list(self):
         'Ensure an error is raised if the list is empty'
         with self.assertRaises(ValueError):
             self.tauntionary.taunt()

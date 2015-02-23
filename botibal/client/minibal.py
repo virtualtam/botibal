@@ -148,8 +148,11 @@ class MiniBal(ClientXMPP):
                 return
 
             elif args.add:
-                self.tauntionary.add_taunt(' '.join(args.add),
-                                           msg['from'].resource)
+                try:
+                    self.tauntionary.add_taunt(' '.join(args.add),
+                                               msg['from'].resource)
+                except ValueError, err:
+                    msg.reply('error: {}'.format(err)).send()
                 return
         except AttributeError:
             # MUC parser
