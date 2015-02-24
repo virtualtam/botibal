@@ -14,7 +14,8 @@ to add new features/ commands, the following methods can be overriden:
 - add_muc_commands              MUC commands,
 - muc_hook                      pre-command-parsing MUC hook.
 """
-import datetime
+from datetime import datetime
+from email.utils import formatdate
 import re
 import sqlite3
 
@@ -133,15 +134,30 @@ class MiniBal(ClientXMPP):
         'Sends a message to the MUC'
         self.send_message(mto=self.room, mbody=text, mtype='groupchat')
 
-    def time(self, msg, args):
+    def date(self, _, args):
         'Tick, tock'
-        # pylint: disable=unused-argument
-        # TODO: customize output formatting
-        self.say_group(str(datetime.datetime.today()))
+        curdate = datetime.today()
+
+        if args.format:
+            # custom format
+            date_str = curdate.strftime(' '.join(args.format))
+
+        elif args.iso:
+            # ISO 8601 (default format)
+            # 2015-02-24 23:23:42.823837
+            date_str = curdate.isoformat(' ')
+        elif args.rfc2822:
+            # RFC 2822
+            # Tue, 24 Feb 2015 22:23:27 -0000
+            date_str = formatdate()
+        else:
+            # 2015-02-24 23:23:47.641520
+            date_str = str(curdate)
+
+        self.say_group(date_str)
 
     def taunt(self, msg, args):
         'Controls taunt interactions'
-        # pylint: disable=unused-argument
         try:
             # message parser
             if args.list:
@@ -176,8 +192,15 @@ class MiniBal(ClientXMPP):
         p_say.add_argument('text', type=str, nargs='+')
         p_say.set_defaults(func=self.say)
 
-        p_time = subparser.add_parser('time', help='')
-        p_time.set_defaults(func=self.time)
+        p_date = subparser.add_parser('date',
+                                      help='gives the current date and time')
+        p_date.add_argument('-f', '--format', type=str, nargs='+',
+                            help='custom format, e.g. %Y %m %d')
+        p_date.add_argument('-i', '--iso', action='store_true',
+                            help='ISO 8601 format (default)')
+        p_date.add_argument('-r', '--rfc2822', action='store_true',
+                            help='RFC 2822 format')
+        p_date.set_defaults(func=self.date)
 
     def add_message_commands(self, subparser):
         'Adds message commands to a subparser'
