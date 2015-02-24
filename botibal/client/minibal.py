@@ -71,13 +71,13 @@ class MiniBal(ClientXMPP):
         try:
             args = self.cmd_parser.parse_args(msg['body'].split(' '))
         except BotCmdError, err:
-            msg.reply('\n{}'.format(err)).send()
+            self.send_reply(msg, '\n{}'.format(err))
             return
 
         try:
             args.func(msg, args)
         except PrivilegeError, err:
-            msg.reply(str(err)).send()
+            self.send_reply(msg, str(err))
 
     def muc_hook(self, msg):
         'MUC hook executed before parsing commands'
@@ -121,11 +121,18 @@ class MiniBal(ClientXMPP):
 
         self.disconnect(wait=5.0, send_close=True)
 
+    def send_reply(self, msg, text):
+        'Replies to a private message'
+        # pylint: disable=no-self-use
+        msg.reply(text).send()
+
     def say(self, msg, args):
         'Says something'
         if self.nick in args.text:
-            msg.reply('Do not try to unleash the infinite fury, {}'.format(
-                msg['mucnick'])).send()
+            self.send_reply(
+                msg,
+                'Do not try to unleash the infinite fury, {}'
+                .format(msg['mucnick']))
             return
 
         self.say_group(' '.join(args.text))
@@ -161,7 +168,7 @@ class MiniBal(ClientXMPP):
         try:
             # message parser
             if args.list:
-                msg.reply('\n{}'.format(self.tauntionary)).send()
+                self.send_reply(msg, '\n{}'.format(self.tauntionary))
                 return
 
             elif args.add:
@@ -169,7 +176,7 @@ class MiniBal(ClientXMPP):
                     self.tauntionary.add_taunt(' '.join(args.add),
                                                msg['from'].resource)
                 except ValueError, err:
-                    msg.reply('error: {}'.format(err)).send()
+                    self.send_reply(msg, 'error: {}'.format(err))
                 return
         except AttributeError:
             # MUC parser
