@@ -74,13 +74,14 @@ class Quizz(object):
         if answers is None or answers == [] or answers == ['']:
             raise ValueError('No answers specified')
 
-        self.db_cur.execute('INSERT INTO question VALUES(NULL,?)', (question,))
+        self.db_cur.execute('INSERT INTO question VALUES(NULL,?)',
+                            (question.decode('utf-8'),))
         self.db_conn.commit()
         q_id, = self.db_cur.execute(
             'SELECT id FROM question ORDER BY id DESC LIMIT 1').fetchone()
         for ans in answers:
             self.db_cur.execute('INSERT INTO answer VALUES(NULL,?,?)',
-                                (q_id, ans))
+                                (q_id, ans.decode('utf-8')))
         self.db_conn.commit()
         self.load_from_db()
 

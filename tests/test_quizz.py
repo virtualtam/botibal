@@ -72,6 +72,16 @@ class TestQuizz(DBTestCase):
         self.qzz.add_question(self.question, self.answers)
         self.assertEqual(len(self.qzz.questions), 1)
 
+    def test_add_accented_question(self):
+        'Add a question containing accented chars'
+        self.qzz.add_question('åéàè', ['ïùø', 'çīł'])
+        self.assertEqual(len(self.qzz.questions), 1)
+
+    def test_add_unicode_question(self):
+        'Add a question containing accented chars (unicode)'
+        self.qzz.add_question(u'åéàè', [u'ïùø', u'çīł'])
+        self.assertEqual(len(self.qzz.questions), 1)
+
     def test_add_empty_question(self):
         'Attempt to add an empty question'
         with self.assertRaises(ValueError):

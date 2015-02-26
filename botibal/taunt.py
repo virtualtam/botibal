@@ -44,7 +44,8 @@ class Tauntionary(object):
         if taunt in [text for _, _, text in self.taunts]:
             raise ValueError('This taunt already exists!')
 
-        self.db_cur.execute('INSERT INTO taunt VALUES(NULL,?,?)', (nick, taunt))
+        self.db_cur.execute('INSERT INTO taunt VALUES(NULL,?,?)',
+                            (nick.decode('utf-8'), taunt.decode('utf-8')))
         self.db_conn.commit()
         self.load_from_db()
 

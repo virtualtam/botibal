@@ -37,6 +37,18 @@ class TestTauntionary(DBTestCase):
                          [(1, u'whoop', u"imah firin' mah laser!"),
                           (2, u'butters', u'you say what what?')])
 
+    def test_add_accented_taunt(self):
+        'Add a taunt containing accented chars'
+        self.tauntionary.add_taunt('åéàè', 'ïùø')
+        self.assertEqual(self.tauntionary.taunts,
+                         [(1, u'\xef\xf9\xf8', u'\xe5\xe9\xe0\xe8')])
+
+    def test_add_unicode_taunt(self):
+        'Add a taunt containing accented chars (unicode)'
+        self.tauntionary.add_taunt(u'åéàè', u'ïùø')
+        self.assertEqual(self.tauntionary.taunts,
+                         [(1, u'\xef\xf9\xf8', u'\xe5\xe9\xe0\xe8')])
+
     def test_add_empty_taunt(self):
         'attempt to add an empty taunt'
         with self.assertRaises(ValueError):
