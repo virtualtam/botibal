@@ -23,6 +23,7 @@ class QuizziBal(MiniBal):
 
     def check_answer(self, matchobject, username):
         'Handles user answers'
+        # TODO: test coverage
         if not self.running:
             return 'Sorry, there is no quizz running'
 
@@ -43,20 +44,21 @@ class QuizziBal(MiniBal):
             q_set = (' '.join(args.add)).split('#')
             try:
                 self.quizz.add_question(q_set[0], q_set[1:])
-                msg.reply('Question added: {}\nAnswers: {}'
-                          .format(q_set[0], q_set[1:])).send()
+                self.send_reply(msg, 'Question added: {}\nAnswers: {}'
+                                .format(q_set[0], q_set[1:]))
             except ValueError, err:
-                msg.reply('error: {}'.format(err)).send()
+                self.send_reply(msg, 'error: {}'.format(err))
 
         elif args.delete:
-            msg.reply(self.quizz.delete_question(int(args))).send()
+            self.send_reply(msg, self.quizz.delete_question(int(args.delete)))
 
         elif args.list:
-            msg.reply('\n{}'.format(self.quizz)).send()
+            self.send_reply(msg, '\n{}'.format(self.quizz))
 
-    def control_quizz(self, msg, args):
+    def control_quizz(self, _, args):
         'Controls the running quizz'
-        # pylint: disable=unused-argument
+        # TODO: restrict control to PM
+        # TODO: test coverage
         if args.action == 'next':
             self.say_group(self.quizz.ask_next_question())
 

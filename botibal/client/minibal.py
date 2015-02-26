@@ -177,7 +177,9 @@ class MiniBal(ClientXMPP):
                                                msg['from'].resource)
                 except ValueError, err:
                     self.send_reply(msg, 'error: {}'.format(err))
+
                 return
+
         except AttributeError:
             # MUC parser
             pass

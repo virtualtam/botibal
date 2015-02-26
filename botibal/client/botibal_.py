@@ -28,11 +28,11 @@ class BotiBal(MiniBal):
                     try:
                         self.fukung.add_link_url(matches)
                     except ValueError, err:
-                        msg.reply('error: {}'.format(err)).send()
+                        self.send_reply(msg, 'error: {}'.format(err))
                 return
 
             elif args.list:
-                msg.reply('\n{}'.format(self.fukung)).send()
+                self.send_reply(msg, '\n{}'.format(self.fukung))
                 return
         except AttributeError:
             # MUC parser
@@ -43,9 +43,8 @@ class BotiBal(MiniBal):
         except ValueError:
             self.say_group('da fukung list iz empty! plz browse da intarnetz!')
 
-    def rot13(self, msg, args):
+    def rot13(self, _, args):
         'Applies rot13 on the passed string'
-        # pylint: disable=unused-argument
         self.say_group(codecs.encode(' '.join(args.text), 'rot_13'))
 
     def add_common_commands(self, subparser):
