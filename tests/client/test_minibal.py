@@ -83,13 +83,22 @@ class TestMiniBal(ClientTestCase):
         self.assertEqual(self.client.text, 'The tauntionary is empty')
 
     def test_muc_taunt(self):
-        'Taunt someone from the MUC (empty tauntionary)'
+        'Taunt someone from the MUC'
         self.client.tauntionary.add_taunt('blorgh!', 'Igor')
 
         self.client.taunt(None, self._parse_muc_cmd('taunt'))
         self.assertEqual(self.client.text, 'blorgh!')
         self.client.taunt(None, self._parse_muc_cmd('taunt Grichka'))
         self.assertEqual(self.client.text, 'Grichka: blorgh!')
+
+    def test_taunt_nick_with_spaces(self):
+        'Taunt someone from the MUC, whose nick contains spaces'
+        self.client.tauntionary.add_taunt('blorgh!', 'Igor')
+
+        self.client.taunt(None, self._parse_muc_cmd('taunt'))
+        self.assertEqual(self.client.text, 'blorgh!')
+        self.client.taunt(None, self._parse_muc_cmd('taunt Grich Ka'))
+        self.assertEqual(self.client.text, 'Grich Ka: blorgh!')
 
     def test_add_invalid_taunt(self):
         'Add an invalid taunt'

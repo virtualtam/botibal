@@ -186,8 +186,8 @@ class MiniBal(ClientXMPP):
 
         taunt = ''
 
-        if args.nick is not None:
-            taunt = '{}: '.format(args.nick)
+        if args.nick is not None and args.nick != []:
+            taunt = '{}: '.format(' '.join(args.nick))
 
         try:
             taunt += self.tauntionary.taunt()
@@ -218,7 +218,7 @@ class MiniBal(ClientXMPP):
         p_quit.set_defaults(func=self.quit)
 
         p_taunt = subparser.add_parser('taunt', help='manage taunts')
-        p_taunt.add_argument('nick', type=str, nargs='?')
+        p_taunt.add_argument('nick', type=str, nargs='*')
         p_taunt.add_argument('-a', '--add', type=str, nargs='+',
                              help='add a new taunt')
         p_taunt.add_argument('-l', '--list', help='list taunts',
@@ -228,7 +228,7 @@ class MiniBal(ClientXMPP):
     def add_muc_commands(self, subparser):
         'Adds message commands to a subparser'
         p_taunt = subparser.add_parser('taunt', help='taunt someone')
-        p_taunt.add_argument('nick', type=str, nargs='?')
+        p_taunt.add_argument('nick', type=str, nargs='*')
         p_taunt.set_defaults(func=self.taunt)
 
     def setup_command_parsers(self):
