@@ -90,6 +90,13 @@ class TestTauntionary(DBTestCase):
         self.tauntionary.add_taunt("you say what what?", "butters")
         self.assertEqual(type(self.tauntionary.taunt()), unicode)
 
+    def test_taunt_id(self):
+        'Pick a taunt with its ID'
+        self.tauntionary.add_taunt("imah firin' mah laser!", "whoop")
+        self.tauntionary.add_taunt("you say what what?", "butters")
+        self.assertEqual(type(self.tauntionary.taunt(2)), unicode)
+        self.assertEqual(type(self.tauntionary.taunt('2')), unicode)
+
 
 if __name__ == '__main__':
     unittest.main()

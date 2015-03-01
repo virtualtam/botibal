@@ -49,6 +49,8 @@ class Tauntionary(object):
         self.db_conn.commit()
         self.load_from_db()
 
-    def taunt(self):
+    def taunt(self, t_id=None):
         'You piece of...'
+        if t_id is not None:
+            return self.taunts[int(t_id) - 1][2]
         return self.taunts[random.randint(0, len(self.taunts) - 1)][2]

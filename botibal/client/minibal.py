@@ -196,10 +196,19 @@ class MiniBal(ClientXMPP):
             taunt = '{}: '.format(' '.join(args.nick))
 
         try:
-            taunt += self.tauntionary.taunt()
+            try:
+                taunt += self.tauntionary.taunt(args.number)
+            except IndexError:
+                self.send_reply(msg,
+                                "taunt #{} doesn't exist".format(args.number))
+                return
+            except AttributeError:
+                taunt += self.tauntionary.taunt()
+
             self.say_group(taunt)
+
         except ValueError:
-            self.say_group('The tauntionary is empty')
+            self.send_reply(msg, 'The tauntionary is empty')
 
     def add_common_commands(self, subparser):
         'Adds common message / MUC commands to a subparser'
@@ -229,6 +238,8 @@ class MiniBal(ClientXMPP):
                              help='add a new taunt')
         p_taunt.add_argument('-l', '--list', help='list taunts',
                              action='store_true')
+        p_taunt.add_argument('-n', '--number', type=int,
+                             help='send the chosen taunt')
         p_taunt.set_defaults(func=self.taunt)
 
     def add_muc_commands(self, subparser):

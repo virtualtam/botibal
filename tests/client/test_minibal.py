@@ -28,13 +28,13 @@ class TestMiniBal(ClientTestCase):
         'Say something (from PM)'
         args = self._parse_cmd('say toto')
         args.func(None, args)
-        self.assertEqual(self.client.text, 'toto')
+        self.assertSayGroupEqual('toto')
 
     def test_muc_say(self):
         'Say something (from MUC)'
         args = self._parse_muc_cmd('say toto')
         args.func(None, args)
-        self.assertEqual(self.client.text, 'toto')
+        self.assertSayGroupEqual('toto')
 
     def test_say_infinite(self):
         "Attempt to use the bot's name"
@@ -67,38 +67,53 @@ class TestMiniBal(ClientTestCase):
         'Disconnect with a custom message'
         self.client.quit(Message(sfrom='admin@server.org'),
                          self._parse_cmd('quit good night!'))
-        self.assertEqual(self.client.text, 'good night!')
+        self.assertSayGroupEqual('good night!')
 
     def test_quit(self):
         'Disconnect with a custom message'
         self.client.quit(Message(sfrom='admin@server.org'),
                          self._parse_cmd('quit'))
-        self.assertEqual(self.client.text, 'I quit!')
+        self.assertSayGroupEqual('I quit!')
 
     def test_muc_empty_taunt(self):
         'Taunt someone from the MUC (empty tauntionary)'
         self.client.taunt(None, self._parse_cmd('taunt'))
-        self.assertEqual(self.client.text, 'The tauntionary is empty')
+        self.assertReplyEqual('The tauntionary is empty')
+        self.assertSayGroupEqual('')
         self.client.taunt(None, self._parse_cmd('taunt Hans'))
-        self.assertEqual(self.client.text, 'The tauntionary is empty')
+        self.assertReplyEqual('The tauntionary is empty')
+        self.assertSayGroupEqual('')
+
+    def test_muc_taunt_index(self):
+        'Taunt s/o, with a selected piece'
+        self.client.tauntionary.add_taunt('blorgh!', 'Igor')
+        self.client.taunt(None, self._parse_cmd('taunt Hans -n 1'))
+        self.assertSayGroupEqual('Hans: blorgh!')
+
+    def test_muc_taunt_index_error(self):
+        'Taunt s/o, with a selected piece: IndexError Deluxe Edition'
+        self.client.tauntionary.add_taunt('blorgh!', 'Igor')
+        self.client.taunt(None, self._parse_cmd('taunt Hans -n 86'))
+        self.assertReplyEqual("taunt #86 doesn't exist")
+        self.assertSayGroupEqual('')
 
     def test_muc_taunt(self):
         'Taunt someone from the MUC'
         self.client.tauntionary.add_taunt('blorgh!', 'Igor')
 
         self.client.taunt(None, self._parse_muc_cmd('taunt'))
-        self.assertEqual(self.client.text, 'blorgh!')
+        self.assertSayGroupEqual('blorgh!')
         self.client.taunt(None, self._parse_muc_cmd('taunt Grichka'))
-        self.assertEqual(self.client.text, 'Grichka: blorgh!')
+        self.assertSayGroupEqual('Grichka: blorgh!')
 
     def test_taunt_nick_with_spaces(self):
         'Taunt someone from the MUC, whose nick contains spaces'
         self.client.tauntionary.add_taunt('blorgh!', 'Igor')
 
         self.client.taunt(None, self._parse_muc_cmd('taunt'))
-        self.assertEqual(self.client.text, 'blorgh!')
+        self.assertSayGroupEqual('blorgh!')
         self.client.taunt(None, self._parse_muc_cmd('taunt Grich Ka'))
-        self.assertEqual(self.client.text, 'Grich Ka: blorgh!')
+        self.assertSayGroupEqual('Grich Ka: blorgh!')
 
     def test_add_too_long_taunt(self):
         'Attempt to add a taunt that exceeds the max authorized length'
