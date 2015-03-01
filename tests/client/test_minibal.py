@@ -6,7 +6,7 @@ import unittest
 from sleekxmpp.stanza import Message
 
 from botibal.client.cmd_parser import PrivilegeError
-from botibal.client.minibal import MiniBal
+from botibal.client.minibal import MiniBal, TAUNT_LEN_MAX
 
 from tests.client.utils import MockMiniBal, ClientTestCase
 
@@ -99,6 +99,15 @@ class TestMiniBal(ClientTestCase):
         self.assertEqual(self.client.text, 'blorgh!')
         self.client.taunt(None, self._parse_muc_cmd('taunt Grich Ka'))
         self.assertEqual(self.client.text, 'Grich Ka: blorgh!')
+
+    def test_add_too_long_taunt(self):
+        'Attempt to add a taunt that exceeds the max authorized length'
+        tnt = ''.join(['a'] * TAUNT_LEN_MAX)
+
+        self.client.taunt(Message(),
+                          self._parse_cmd('taunt -a long{}'.format(tnt)))
+        self.assertEqual(self.client.reply,
+                         'too long a taunt, sir!')
 
     def test_add_invalid_taunt(self):
         'Add an invalid taunt'

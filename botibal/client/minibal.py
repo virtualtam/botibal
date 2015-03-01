@@ -24,6 +24,8 @@ from sleekxmpp import ClientXMPP
 from botibal.client.cmd_parser import BotCmdParser, BotCmdError, PrivilegeError
 from botibal.taunt import Tauntionary
 
+TAUNT_LEN_MAX = 197  # 197 (10) is 101 (14), which is kinda cool, huh?
+
 
 class MiniBal(ClientXMPP):
     'A minimalist XMPP bot'
@@ -172,6 +174,10 @@ class MiniBal(ClientXMPP):
                 return
 
             elif args.add:
+                if len(''.join(args.add)) > TAUNT_LEN_MAX:
+                    self.send_reply(msg, 'too long a taunt, sir!')
+                    return
+
                 try:
                     self.tauntionary.add_taunt(' '.join(args.add),
                                                msg['from'].resource)
