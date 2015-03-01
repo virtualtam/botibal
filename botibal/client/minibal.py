@@ -83,8 +83,14 @@ class MiniBal(ClientXMPP):
 
     def muc_hook(self, msg):
         'MUC hook executed before parsing commands'
-        if msg['body'] == 'plop {}'.format(self.nick):
-            self.say_group('plop {}'.format(msg['mucnick']))
+        # For those about to plop
+        #     We salute you!
+        matches = re.match(r'^(\w+) {}([ ]?[!]?)'.format(self.nick),
+                           msg['body'])
+        if matches:
+            self.say_group('{} {}{}'.format(matches.group(1),
+                                            msg['mucnick'],
+                                            matches.group(2)))
             return True
 
     def muc_message(self, msg):
