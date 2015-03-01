@@ -85,8 +85,9 @@ class MiniBal(ClientXMPP):
         'MUC hook executed before parsing commands'
         # For those about to plop
         #     We salute you!
-        matches = re.match(r'^(\w+) {}([ ]?[!]?)'.format(self.nick),
-                           msg['body'])
+        matches = re.match(ur'^(\w+) {}([ ]?[!]?)'.format(self.nick),
+                           msg['body'],
+                           re.UNICODE)
         if matches:
             self.say_group('{} {}{}'.format(matches.group(1),
                                             msg['mucnick'],
