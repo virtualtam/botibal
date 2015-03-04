@@ -112,8 +112,7 @@ class MiniBal(ClientXMPP):
 
         try:
             args = self.muc_cmd_parser.parse_args(cmdline.split(' '))
-        except BotCmdError, err:
-            self.say_group('\n{}'.format(err))
+        except BotCmdError:
             return
 
         args.func(msg, args)
