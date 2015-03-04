@@ -21,7 +21,8 @@ import sqlite3
 
 from sleekxmpp import ClientXMPP
 
-from botibal.client.cmd_parser import BotCmdParser, BotCmdError, PrivilegeError
+from botibal.client.cmd_parser import (BotCmdParser, BotCmdError,
+                                       BotHelp, PrivilegeError)
 from botibal.taunt import Tauntionary
 
 TAUNT_LEN_MAX = 197  # 197 (10) is 101 (14), which is kinda cool, huh?
@@ -105,6 +106,9 @@ class MiniBal(ClientXMPP):
 
         try:
             args = self.muc_cmd_parser.parse_args(cmdline.split(' '))
+        except BotHelp, err:
+            self.say_group('\n{}'.format(err))
+            return
         except BotCmdError:
             return
 
