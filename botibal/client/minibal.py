@@ -29,7 +29,7 @@ TAUNT_LEN_MAX = 197  # 197 (10) is 101 (14), which is kinda cool, huh?
 
 class MiniBal(ClientXMPP):
     'A minimalist XMPP bot'
-    # pylint: disable=too-many-public-methods
+    # pylint: disable=too-many-public-methods,too-many-instance-attributes
 
     def __init__(self, jid, password, nick, room, admin_jid,
                  database='data.db'):
@@ -53,6 +53,7 @@ class MiniBal(ClientXMPP):
 
         self.db_conn = sqlite3.connect(database, check_same_thread=False)
         self.tauntionary = Tauntionary(self.db_conn)
+        self.plops = set()
 
     def session_start(self, event):
         'Starts an XMPP session and connects to a MUC'
@@ -83,15 +84,7 @@ class MiniBal(ClientXMPP):
 
     def muc_hook(self, msg):
         'MUC hook executed before parsing commands'
-        # For those about to plop
-        #     We salute you!
-        matches = re.match(ur'^(\w+) {}([ ]?[!]?)'.format(self.nick),
-                           msg['body'],
-                           re.UNICODE)
-        if matches:
-            self.say_group('{} {}{}'.format(matches.group(1),
-                                            msg['mucnick'],
-                                            matches.group(2)))
+        if self.plop(msg):
             return True
 
     def muc_message(self, msg):
@@ -170,6 +163,30 @@ class MiniBal(ClientXMPP):
             date_str = str(curdate)
 
         self.say_group(date_str)
+
+    def plop(self, msg):
+        """
+        For those about to plop
+            We salute you!
+        """
+        matches = re.match(ur'^(\w+) {}([ ]?[!]?)'.format(self.nick),
+                           msg['body'],
+                           re.UNICODE)
+
+        if matches is None:
+            return False
+
+        if msg['mucnick'] in self.plops:
+            # prevent infinite plopping
+            # yeah, having several bots can be nasty ;-)
+            self.say_group('meh.')
+
+        else:
+            self.plops.add(msg['mucnick'])
+            self.say_group('{} {}{}'.format(matches.group(1),
+                                            msg['mucnick'],
+                                            matches.group(2)))
+        return True
 
     def taunt(self, msg, args):
         'Controls taunt interactions'
