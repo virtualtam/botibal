@@ -55,9 +55,8 @@ class QuizziBal(MiniBal):
         elif args.list:
             self.send_reply(msg, '\n{}'.format(self.quizz))
 
-    def control_quizz(self, _, args):
+    def control_quizz(self, msg, args):
         'Controls the running quizz'
-        # TODO: restrict control to PM
         # TODO: test coverage
         if args.action == 'next':
             self.say_group(self.quizz.ask_next_question())
@@ -67,11 +66,11 @@ class QuizziBal(MiniBal):
             self.say_group('All scores have been reset!')
 
         elif args.action == 'score':
-            self.say_group('\nScores:\n{}'.format(self.scores.results()))
+            self.send_reply(msg, '\nScores:\n{}'.format(self.scores.results()))
 
         elif args.action == 'start':
             if self.running:
-                self.say_group('The quizz is already running ^_^')
+                self.send_reply(msg, 'The quizz is already running ^_^')
                 return
 
             self.running = True
@@ -80,15 +79,6 @@ class QuizziBal(MiniBal):
         elif args.action == 'stop':
             self.running = False
             self.say_group('Quizz stopped')
-
-    def add_common_commands(self, subparser):
-        super(QuizziBal, self).add_common_commands(subparser)
-
-        p_quizz = subparser.add_parser('quizz', help='control quizzes')
-        p_quizz.add_argument(
-            'action', help='control action',
-            choices=['next', 'reset', 'score', 'start', 'stop'])
-        p_quizz.set_defaults(func=self.control_quizz)
 
     def add_message_commands(self, subparser):
         super(QuizziBal, self).add_message_commands(subparser)
@@ -102,6 +92,12 @@ class QuizziBal(MiniBal):
         p_que.add_argument('-l', '--list', action='store_true',
                            help='lists all questions')
         p_que.set_defaults(func=self.question)
+
+        p_quizz = subparser.add_parser('quizz', help='control quizzes')
+        p_quizz.add_argument(
+            'action', help='control action',
+            choices=['next', 'reset', 'score', 'start', 'stop'])
+        p_quizz.set_defaults(func=self.control_quizz)
 
     def muc_hook(self, msg):
         super(QuizziBal, self).muc_hook(msg)
