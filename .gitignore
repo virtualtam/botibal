@@ -6,3 +6,7 @@ config.py
 # Tests
 .coverage
 htmlcov
+
+# Packaging & Distribution
+*.egg-info
+dist

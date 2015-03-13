@@ -13,6 +13,9 @@ clean:
 distclean:
 	@git clean -xdf
 
+botibal: clean
+	@python2 setup.py sdist
+
 basic_coverage: clean
 	@echo "=== Coverage ==="
 	@coverage run --source=$(PACKAGE) -m unittest discover -s tests
