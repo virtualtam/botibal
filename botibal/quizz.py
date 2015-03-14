@@ -71,6 +71,9 @@ class Quizz(object):
         if question is None or question == '':
             raise ValueError('Empty question')
 
+        if question in [que['text'] for _, que in self.questions.iteritems()]:
+            raise ValueError('Duplicate question')
+
         if answers is None or answers == [] or answers == ['']:
             raise ValueError('No answers specified')
 

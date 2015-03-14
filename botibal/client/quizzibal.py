@@ -18,12 +18,10 @@ class QuizziBal(MiniBal):
             jid, password, nick, room, admin_jid, database)
         self.quizz = Quizz(self.db_conn)
         self.scores = ScoreDict()
-        self.adding_question = False
         self.running = False
 
     def check_answer(self, matchobject, username):
         'Handles user answers'
-        # TODO: test coverage
         if not self.running:
             return 'Sorry, there is no quizz running'
 
@@ -57,7 +55,6 @@ class QuizziBal(MiniBal):
 
     def control_quizz(self, msg, args):
         'Controls the running quizz'
-        # TODO: test coverage
         if args.action == 'next':
             self.say_group(self.quizz.ask_next_question())
 
