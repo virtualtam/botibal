@@ -2,7 +2,9 @@
 # pylint: disable=too-many-public-methods
 'Tests the taunt module'
 import unittest
-from botibal.taunt import Tauntionary
+
+from botibal.taunt import Tauntionary, DEFAULT_AGGRO
+
 from tests.utils import DBTestCase
 
 
@@ -21,33 +23,37 @@ class TestTauntionary(DBTestCase):
     def test_init_db(self):
         'Load an existing DB'
         self.db_cur.execute(
-            'INSERT INTO taunt VALUES(NULL,"h4xx0r","rtfm, n00b!")')
+            'INSERT INTO taunt VALUES(NULL,"h4xx0r","rtfm, n00b!", 3)')
         self.db_conn.commit()
         self.tauntionary = Tauntionary(self.db_conn)
         self.assertEqual(self.tauntionary.taunts,
-                         [(1, u'h4xx0r', u'rtfm, n00b!')])
+                         [(1, u'h4xx0r', u'rtfm, n00b!', 3)])
 
     def test_add_taunt(self):
         'Add new entries to the DB'
         self.tauntionary.add_taunt("imah firin' mah laser!", "whoop")
         self.assertEqual(self.tauntionary.taunts,
-                         [(1, u'whoop', u"imah firin' mah laser!")])
-        self.tauntionary.add_taunt("you say what what?", "butters")
+                         [(1, u'whoop', u"imah firin' mah laser!",
+                           DEFAULT_AGGRO)])
+        self.tauntionary.add_taunt("you say what what?", "butters", 3)
         self.assertEqual(self.tauntionary.taunts,
-                         [(1, u'whoop', u"imah firin' mah laser!"),
-                          (2, u'butters', u'you say what what?')])
+                         [(1, u'whoop', u"imah firin' mah laser!",
+                           DEFAULT_AGGRO),
+                          (2, u'butters', u'you say what what?', 3)])
 
     def test_add_accented_taunt(self):
         'Add a taunt containing accented chars'
         self.tauntionary.add_taunt('åéàè', 'ïùø')
         self.assertEqual(self.tauntionary.taunts,
-                         [(1, u'\xef\xf9\xf8', u'\xe5\xe9\xe0\xe8')])
+                         [(1, u'\xef\xf9\xf8', u'\xe5\xe9\xe0\xe8',
+                           DEFAULT_AGGRO)])
 
     def test_add_unicode_taunt(self):
         'Add a taunt containing accented chars (unicode)'
         self.tauntionary.add_taunt(u'åéàè', u'ïùø')
         self.assertEqual(self.tauntionary.taunts,
-                         [(1, u'\xef\xf9\xf8', u'\xe5\xe9\xe0\xe8')])
+                         [(1, u'\xef\xf9\xf8', u'\xe5\xe9\xe0\xe8',
+                           DEFAULT_AGGRO)])
 
     def test_add_empty_taunt(self):
         'attempt to add an empty taunt'
@@ -74,15 +80,36 @@ class TestTauntionary(DBTestCase):
         with self.assertRaises(ValueError):
             self.tauntionary.taunt()
 
+    def test_list_by_aggro(self):
+        'List taunts by aggro level'
+        self.tauntionary.add_taunt("imah firin' mah laser!", "whoop", 5)
+        self.tauntionary.add_taunt("you say what what?", "butters", 3)
+        self.assertEqual(self.tauntionary.list_by_aggro(),
+                         'lv.3\n'
+                         ' - 2 - you say what what?\n'
+                         'lv.5\n'
+                         " - 1 - imah firin' mah laser!\n")
+
     def test_repr(self):
         'Display the Tauntionary as a string'
         self.tauntionary.add_taunt("imah firin' mah laser!", "whoop")
         self.assertEqual(str(self.tauntionary),
-                         "1 - imah firin' mah laser! (whoop)")
-        self.tauntionary.add_taunt("you say what what?", "butters")
+                         "1 - imah firin' mah laser! (lv.{}, whoop)"
+                         .format(DEFAULT_AGGRO))
+        self.tauntionary.add_taunt("you say what what?", "butters", 3)
         self.assertEqual(str(self.tauntionary),
-                         "1 - imah firin' mah laser! (whoop)\n"
-                         "2 - you say what what? (butters)")
+                         "1 - imah firin' mah laser! (lv.{}, whoop)\n"
+                         "2 - you say what what? (lv.3, butters)"
+                         .format(DEFAULT_AGGRO))
+
+    def test_set_aggro(self):
+        'Change the aggressivity level of a taunt'
+        self.tauntionary.add_taunt("imah firin' mah laser!", "whoop", 1)
+        self.assertEqual(str(self.tauntionary),
+                         "1 - imah firin' mah laser! (lv.1, whoop)")
+        self.tauntionary.set_aggro(1, 3)
+        self.assertEqual(str(self.tauntionary),
+                         "1 - imah firin' mah laser! (lv.3, whoop)")
 
     def test_taunt(self):
         'Ensure Unicode strings are returned'

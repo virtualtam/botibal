@@ -2,6 +2,8 @@
 'I swear...'
 import random
 
+DEFAULT_AGGRO = 4
+
 
 class Tauntionary(object):
     'A nice collection of charming sentences'
@@ -12,8 +14,9 @@ class Tauntionary(object):
         self.init_db()
 
     def __repr__(self):
-        return '\n'.join(['{} - {} ({})'.format(t_id, t_text, t_nick)
-                          for t_id, t_nick, t_text in self.taunts])
+        return '\n'.join(
+            ['{} - {} (lv.{}, {})'.format(t_id, t_text, t_aggro, t_nick)
+             for t_id, t_nick, t_text, t_aggro in self.taunts])
 
     def init_db(self):
         """
@@ -22,10 +25,13 @@ class Tauntionary(object):
         - loads data.
         """
         self.db_cur.execute(
-            '''CREATE TABLE  IF NOT EXISTS taunt (
-            id INTEGER PRIMARY KEY,
-            nick TEXT,
-            text TEXT)''')
+            '''
+            CREATE TABLE IF NOT EXISTS taunt (
+            id    INTEGER PRIMARY KEY,
+            nick  TEXT,
+            text  TEXT,
+            aggro INTEGER DEFAULT 5)
+            ''')
         self.db_conn.commit()
         self.load_from_db()
 
@@ -33,7 +39,23 @@ class Tauntionary(object):
         'Loads taunts from the database'
         self.taunts = self.db_cur.execute('SELECT * FROM taunt').fetchall()
 
-    def add_taunt(self, taunt, nick):
+    def list_by_aggro(self):
+        'Lists all taunts, sorted by aggro level'
+        taunts = self.db_cur.execute('SELECT id, text, aggro FROM taunt '
+                                     'ORDER BY aggro, id').fetchall()
+
+        t_list = ''
+        current_aggro = ''
+
+        for t_id, t_text, t_aggro in taunts:
+            if t_aggro != current_aggro:
+                t_list += 'lv.{}\n'.format(t_aggro)
+
+            t_list += ' - {} - {}\n'.format(t_id, t_text)
+
+        return t_list
+
+    def add_taunt(self, taunt, nick, aggro=DEFAULT_AGGRO):
         'Adds a new taunt'
         if taunt is None or taunt == '':
             raise ValueError('Empty taunt')
@@ -41,11 +63,19 @@ class Tauntionary(object):
         if nick is None or nick == '':
             raise ValueError('Taunt: empty user nickname')
 
-        if taunt in [text for _, _, text in self.taunts]:
+        if taunt in [text for _, _, text, _ in self.taunts]:
             raise ValueError('This taunt already exists!')
 
-        self.db_cur.execute('INSERT INTO taunt VALUES(NULL,?,?)',
-                            (nick.decode('utf-8'), taunt.decode('utf-8')))
+        self.db_cur.execute(
+            'INSERT INTO taunt VALUES(NULL,?,?,?)',
+            (nick.decode('utf-8'), taunt.decode('utf-8'), aggro))
+        self.db_conn.commit()
+        self.load_from_db()
+
+    def set_aggro(self, t_id, aggro):
+        'Changes the aggressivity level of a taunt'
+        self.db_cur.execute('UPDATE taunt SET aggro=? WHERE id=?',
+                            (int(aggro), int(t_id)))
         self.db_conn.commit()
         self.load_from_db()
 
