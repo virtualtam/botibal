@@ -101,18 +101,18 @@ class TestMiniBal(ClientTestCase):
         'Taunt someone from the MUC'
         self.client.tauntionary.add_taunt('blorgh!', 'Igor')
 
-        self.client.taunt(None, self._parse_muc_cmd('taunt'))
+        self.client.taunt(None, self._parse_cmd('taunt'))
         self.assertSayGroupEqual('blorgh!')
-        self.client.taunt(None, self._parse_muc_cmd('taunt Grichka'))
+        self.client.taunt(None, self._parse_cmd('taunt Grichka'))
         self.assertSayGroupEqual('Grichka: blorgh!')
 
     def test_taunt_nick_with_spaces(self):
         'Taunt someone from the MUC, whose nick contains spaces'
         self.client.tauntionary.add_taunt('blorgh!', 'Igor')
 
-        self.client.taunt(None, self._parse_muc_cmd('taunt'))
+        self.client.taunt(None, self._parse_cmd('taunt'))
         self.assertSayGroupEqual('blorgh!')
-        self.client.taunt(None, self._parse_muc_cmd('taunt Grich Ka'))
+        self.client.taunt(None, self._parse_cmd('taunt Grich Ka'))
         self.assertSayGroupEqual('Grich Ka: blorgh!')
 
     def test_add_too_long_taunt(self):
@@ -135,6 +135,26 @@ class TestMiniBal(ClientTestCase):
         'Ask for the (empty) list of taunts'
         self.client.taunt(Message(), self._parse_cmd('taunt -l'))
         self.assertEqual(self.client.reply, '\n')
+
+    def test_list_taunt_by_aggro(self):
+        'Returns the list of taunts, sorted by aggro level'
+        self.client.tauntionary.add_taunt('blaaargh?', 'Grishka', 3)
+        self.client.tauntionary.add_taunt('blorgh!', 'Igor', 5)
+        self.client.taunt(Message(), self._parse_cmd('taunt --lg'))
+        self.assertEqual(self.client.reply,
+                         '\n{}'.format(self.client.tauntionary.list_by_aggro()))
+
+    def test_set_taunt_aggro(self):
+        'Set the aggro level of a taunt'
+        self.client.tauntionary.add_taunt('blaaargh?', 'Grishka', 3)
+        self.client.taunt(Message(), self._parse_cmd('taunt -g 2 -n 1'))
+        self.assertEqual(self.client.tauntionary.taunts[0][3], 2)
+
+    def test_set_taunt_aggro_no_number(self):
+        'Evolutionary void: set the aggro level of nothing'
+        self.client.tauntionary.add_taunt('blaaargh?', 'Grishka', 3)
+        self.client.taunt(Message(), self._parse_cmd('taunt -g 2'))
+        self.assertReplyEqual('no taunt specified')
 
 
 if __name__ == '__main__':

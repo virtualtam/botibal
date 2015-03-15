@@ -83,12 +83,14 @@ class TestTauntionary(DBTestCase):
     def test_list_by_aggro(self):
         'List taunts by aggro level'
         self.tauntionary.add_taunt("imah firin' mah laser!", "whoop", 5)
+        self.tauntionary.add_taunt("trololo!", "khail", 3)
         self.tauntionary.add_taunt("you say what what?", "butters", 3)
         self.assertEqual(self.tauntionary.list_by_aggro(),
-                         'lv.3\n'
-                         ' - 2 - you say what what?\n'
-                         'lv.5\n'
-                         " - 1 - imah firin' mah laser!\n")
+                         'lv.3\n------\n'
+                         '  2 - trololo!\n'
+                         '  3 - you say what what?\n'
+                         'lv.5\n------\n'
+                         "  1 - imah firin' mah laser!\n")
 
     def test_repr(self):
         'Display the Tauntionary as a string'
@@ -108,6 +110,15 @@ class TestTauntionary(DBTestCase):
         self.assertEqual(str(self.tauntionary),
                          "1 - imah firin' mah laser! (lv.1, whoop)")
         self.tauntionary.set_aggro(1, 3)
+        self.assertEqual(str(self.tauntionary),
+                         "1 - imah firin' mah laser! (lv.3, whoop)")
+
+    def test_set_negative_aggro(self):
+        'Change the aggressivity level of a taunt'
+        self.tauntionary.add_taunt("imah firin' mah laser!", "whoop", 1)
+        self.assertEqual(str(self.tauntionary),
+                         "1 - imah firin' mah laser! (lv.1, whoop)")
+        self.tauntionary.set_aggro(1, -3)
         self.assertEqual(str(self.tauntionary),
                          "1 - imah firin' mah laser! (lv.3, whoop)")
 

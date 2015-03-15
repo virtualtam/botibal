@@ -49,9 +49,10 @@ class Tauntionary(object):
 
         for t_id, t_text, t_aggro in taunts:
             if t_aggro != current_aggro:
-                t_list += 'lv.{}\n'.format(t_aggro)
+                t_list += 'lv.{}\n------\n'.format(t_aggro)
+                current_aggro = t_aggro
 
-            t_list += ' - {} - {}\n'.format(t_id, t_text)
+            t_list += '  {} - {}\n'.format(t_id, t_text)
 
         return t_list
 
@@ -75,7 +76,7 @@ class Tauntionary(object):
     def set_aggro(self, t_id, aggro):
         'Changes the aggressivity level of a taunt'
         self.db_cur.execute('UPDATE taunt SET aggro=? WHERE id=?',
-                            (int(aggro), int(t_id)))
+                            (abs(int(aggro)), int(t_id)))
         self.db_conn.commit()
         self.load_from_db()
 

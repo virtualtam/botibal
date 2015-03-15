@@ -194,48 +194,52 @@ class MiniBal(ClientXMPP):
 
     def taunt(self, msg, args):
         'Controls taunt interactions'
-        try:
-            # message parser
-            if args.list:
-                self.send_reply(msg, '\n{}'.format(self.tauntionary))
+        if args.lg:
+            self.send_reply(msg, '\n{}'.format(
+                self.tauntionary.list_by_aggro()))
+
+        elif args.list:
+            self.send_reply(msg, '\n{}'.format(self.tauntionary))
+
+        elif args.add:
+            if len(''.join(args.add)) > TAUNT_LEN_MAX:
+                self.send_reply(msg, 'too long a taunt, sir!')
                 return
 
-            elif args.add:
-                if len(''.join(args.add)) > TAUNT_LEN_MAX:
-                    self.send_reply(msg, 'too long a taunt, sir!')
-                    return
-
-                try:
-                    self.tauntionary.add_taunt(' '.join(args.add),
-                                               msg['from'].resource)
-                except ValueError, err:
-                    self.send_reply(msg, 'error: {}'.format(err))
-
-                return
-
-        except AttributeError:
-            # MUC parser
-            pass
-
-        taunt = ''
-
-        if args.nick is not None and args.nick != []:
-            taunt = '{}: '.format(' '.join(args.nick))
-
-        try:
             try:
-                taunt += self.tauntionary.taunt(args.number)
-            except IndexError:
-                self.send_reply(msg,
-                                "taunt #{} doesn't exist".format(args.number))
+                self.tauntionary.add_taunt(' '.join(args.add),
+                                           msg['from'].resource,
+                                           args.aggro)
+            except ValueError, err:
+                self.send_reply(msg, 'error: {}'.format(err))
+
+        elif args.aggro:
+            if not args.number:
+                self.send_reply(msg, 'no taunt specified')
                 return
-            except AttributeError:
-                taunt += self.tauntionary.taunt()
 
-            self.say_group(taunt)
+            self.tauntionary.set_aggro(args.number, args.aggro)
 
-        except ValueError:
-            self.send_reply(msg, 'The tauntionary is empty')
+        else:
+            taunt = ''
+
+            if args.nick is not None and args.nick != []:
+                taunt = '{}: '.format(' '.join(args.nick))
+
+            try:
+                try:
+                    taunt += self.tauntionary.taunt(args.number)
+                except IndexError:
+                    self.send_reply(
+                        msg, "taunt #{} doesn't exist".format(args.number))
+                    return
+                except AttributeError:
+                    taunt += self.tauntionary.taunt()
+
+                self.say_group(taunt)
+
+            except ValueError:
+                self.send_reply(msg, 'The tauntionary is empty')
 
     def add_common_commands(self, subparser):
         'Adds common message / MUC commands to a subparser'
@@ -263,17 +267,19 @@ class MiniBal(ClientXMPP):
         p_taunt.add_argument('nick', type=str, nargs='*')
         p_taunt.add_argument('-a', '--add', type=str, nargs='+',
                              help='add a new taunt')
+        p_taunt.add_argument('-g', '--aggro', type=int,
+                             help='define the aggro level of a taunt')
         p_taunt.add_argument('-l', '--list', help='list taunts',
                              action='store_true')
+        p_taunt.add_argument('-L', '--lg', help='list taunts by aggro level',
+                             action='store_true')
         p_taunt.add_argument('-n', '--number', type=int,
-                             help='send the chosen taunt')
+                             help='select a taunt')
         p_taunt.set_defaults(func=self.taunt)
 
     def add_muc_commands(self, subparser):
-        'Adds message commands to a subparser'
-        p_taunt = subparser.add_parser('taunt', help='taunt someone')
-        p_taunt.add_argument('nick', type=str, nargs='*')
-        p_taunt.set_defaults(func=self.taunt)
+        'Adds groupchat commands to a subparser'
+        pass
 
     def setup_command_parsers(self):
         'Setups message and MUC command parsers'
