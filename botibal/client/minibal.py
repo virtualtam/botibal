@@ -250,7 +250,7 @@ class MiniBal(ClientXMPP):
         p_date = subparser.add_parser('date',
                                       help='gives the current date and time')
         p_date.add_argument('-f', '--format', type=str, nargs='+',
-                            help='custom format, e.g. %Y %m %d')
+                            help='custom format, e.g. %%Y %%m %%d')
         p_date.add_argument('-i', '--iso', action='store_true',
                             help='ISO 8601 format (default)')
         p_date.add_argument('-r', '--rfc2822', action='store_true',
