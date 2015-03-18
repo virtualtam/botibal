@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/virtualtam/botibal.png?branch=master)](http://travis-ci.org/virtualtam/botibal)
 
-A silly, quizzical XMPP bot that uses the [SleekXMPP](https://github.com/fritzy/SleekXMPP) Python library.
+A silly, quizzical XMPP bot based on the [SleekXMPP](https://github.com/fritzy/SleekXMPP) Python library.
 
 ## Available bots
 ### MiniBal, the minimalist bot
@@ -64,13 +64,12 @@ The available commands depend on which bot is running, and are split as follows:
 [...]
 <Hans> Minibal: -h
 <Minibal> 
-usage: Minibal:  [-h] {say,time,taunt} ...
+usage: Minibal:  [-h] {say,time} ...
 
 positional arguments:
   {say,time,taunt}
     say             say something
     time
-    taunt           taunt someone
 [...]
 <Hans> Minibal: say -h
 <Minibal> 
@@ -103,7 +102,7 @@ positional arguments:
 ```
 
 ## Dependencies
-* python2,
+* python2.7,
 * sleekxmpp,
 * optional - DNS resolution, SSL/TLS verification:
  * dnspython,
@@ -114,7 +113,8 @@ positional arguments:
 ```bash
 $ virtualenv2 ENV
 $ source ENV/bin/activate
-$ pip install -r requirements.txt
+$ python setup.py sdist
+$ easy_install dist/botibal-x.y.z.tar.gz
 ```
 
 ## Configuration
@@ -131,7 +131,7 @@ Copy `config.py.example` to `config.py`, and customize connection values:
 * pep8,
 * pylint.
 ```bash
-$ pip install -r requirements_test.txt
+$ pip install -r requirements.txt
 ```
 
 ### Test makefile
