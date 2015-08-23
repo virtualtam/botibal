@@ -3,8 +3,7 @@
 'Tests the taunt module'
 import unittest
 
-from botibal.taunt import Tauntionary, DEFAULT_AGGRO
-
+from botibal.taunt import DEFAULT_AGGRO, Tauntionary
 from tests.utils import DBTestCase
 
 

@@ -6,8 +6,7 @@ import unittest
 from sleekxmpp.stanza import Message
 
 from botibal.client.botibal_ import BotiBal
-
-from tests.client.utils import MockMiniBal, ClientTestCase
+from tests.client.utils import ClientTestCase, MockMiniBal
 
 
 class MockBotiBal(BotiBal, MockMiniBal):

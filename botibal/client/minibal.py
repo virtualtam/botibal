@@ -14,15 +14,15 @@ to add new features/ commands, the following methods can be overriden:
 - add_muc_commands              MUC commands,
 - muc_hook                      pre-command-parsing MUC hook.
 """
-from datetime import datetime
-from email.utils import formatdate
 import re
 import sqlite3
+from datetime import datetime
+from email.utils import formatdate
 
 from sleekxmpp import ClientXMPP
 
-from botibal.client.cmd_parser import (BotCmdParser, BotCmdError,
-                                       BotHelp, PrivilegeError)
+from botibal.client.cmd_parser import (BotCmdError, BotCmdParser, BotHelp,
+                                       PrivilegeError)
 from botibal.taunt import Tauntionary
 
 TAUNT_LEN_MAX = 197  # 197 (10) is 101 (14), which is kinda cool, huh?

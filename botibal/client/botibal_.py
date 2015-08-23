@@ -4,7 +4,7 @@ import codecs
 import re
 
 from botibal.client.minibal import MiniBal
-from botibal.fukung import Fukung, REGEX
+from botibal.fukung import REGEX, Fukung
 
 
 class BotiBal(MiniBal):

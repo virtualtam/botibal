@@ -2,7 +2,6 @@
 'botibal.client test utilities'
 # pylint: disable=too-many-public-methods
 from botibal.client.minibal import MiniBal
-
 from tests.utils import DBTestCase
 
 

@@ -6,9 +6,8 @@ import unittest
 from sleekxmpp.stanza import Message
 
 from botibal.client.cmd_parser import PrivilegeError
-from botibal.client.minibal import MiniBal, TAUNT_LEN_MAX
-
-from tests.client.utils import MockMiniBal, ClientTestCase
+from botibal.client.minibal import TAUNT_LEN_MAX, MiniBal
+from tests.client.utils import ClientTestCase, MockMiniBal
 
 
 class TestMiniBal(ClientTestCase):

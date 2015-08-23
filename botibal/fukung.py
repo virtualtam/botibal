@@ -2,7 +2,6 @@
 'Fukung interaction'
 import random
 
-
 BASE_URL = 'http://www.fukung.net/v/'
 REGEX = r'http://(www\.)?fukung.net/v/(\d+)/(\w+)\.(\w+)'
 

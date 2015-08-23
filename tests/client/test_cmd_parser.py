@@ -3,7 +3,7 @@
 # pylint: disable=too-many-public-methods
 import unittest
 
-from botibal.client.cmd_parser import BotCmdParser, BotCmdError, BotHelp
+from botibal.client.cmd_parser import BotCmdError, BotCmdParser, BotHelp
 
 
 class TestBotCmdParser(unittest.TestCase):

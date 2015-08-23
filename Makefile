@@ -16,16 +16,12 @@ distclean:
 botibal: clean
 	@python2 setup.py sdist
 
-basic_coverage: clean
-	@echo "=== Coverage ==="
-	@coverage run --source=$(PACKAGE) -m unittest discover -s tests
-	@coverage report
+# static analysis
+lint: pylint pep8 isort
 
-coverage: clean basic_coverage
-	@rm -rf htmlcov
-	@coverage html
-
-lint: pylint pep8
+isort: clean
+	@echo "=== isort ==="
+	@isort $(PYTHONFILES) --check-only
 
 pep8: clean
 	@echo "=== PEP8 ==="
@@ -34,6 +30,16 @@ pep8: clean
 pylint: clean
 	@echo "=== Pylint ==="
 	@$(PYLINT) $(PYLINTFLAGS) $(PYTHONFILES) || exit 0
+
+# testing
+basic_coverage: clean
+	@echo "=== Coverage ==="
+	@coverage run --source=$(PACKAGE) -m unittest discover -s tests
+	@coverage report
+
+coverage: clean basic_coverage
+	@rm -rf htmlcov
+	@coverage html
 
 test: clean
 	@python -m unittest discover -s tests

@@ -1,12 +1,11 @@
 #!/usr/bin/env python2
 'Start'
-from argparse import ArgumentParser
+import config
 import logging
 import sys
+from argparse import ArgumentParser
 
 from botibal.client import BotiBal, MiniBal, QuizziBal
-import config
-
 
 if __name__ == '__main__':
     PARSER = ArgumentParser()
