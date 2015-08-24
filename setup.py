@@ -1,7 +1,5 @@
 #!/usr/bin/env python2
 'Setup script for Botibal'
-import os
-
 from setuptools import setup
 
 setup(
