@@ -1,8 +1,4 @@
 PACKAGE=botibal
-PEP8 = pep8
-PEP8FLAGS = --count --statistics --max-line-length=80
-PYLINT = pylint
-PYLINTFLAGS = -rn --disable=locally-disabled
 PYTHONFILES := $(shell find . -name '*.py')
 
 all: lint coverage
@@ -18,19 +14,23 @@ botibal: clean
 	@python2 setup.py sdist
 
 # static analysis
-lint: pylint pep8 isort
+lint: isort pep8 pep257 pylint
 
 isort: clean
 	@echo "=== isort ==="
 	@isort $(PYTHONFILES) --check-only
 
-pep8: clean
+pep%: clean
+	@echo "=== PEP$* ==="
+	@pep$* $(PYTHONFILES) || true
+
+opep8: clean
 	@echo "=== PEP8 ==="
 	@$(PEP8) $(PEP8FLAGS) $(PYTHONFILES) || true
 
 pylint: clean
 	@echo "=== Pylint ==="
-	@$(PYLINT) $(PYLINTFLAGS) $(PYTHONFILES) || true
+	@pylint $(PYLINTFLAGS) $(PYTHONFILES) || true
 
 # testing
 basic_coverage: clean
