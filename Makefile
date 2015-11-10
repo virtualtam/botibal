@@ -8,6 +8,7 @@ PYTHONFILES := $(shell find . -name '*.py')
 all: lint coverage
 
 clean:
+	@rm -rf build dist
 	@find . -name "*.pyc" -delete
 
 distclean:
@@ -25,11 +26,11 @@ isort: clean
 
 pep8: clean
 	@echo "=== PEP8 ==="
-	@$(PEP8) $(PEP8FLAGS) $(PYTHONFILES) || exit 0
+	@$(PEP8) $(PEP8FLAGS) $(PYTHONFILES) || true
 
 pylint: clean
 	@echo "=== Pylint ==="
-	@$(PYLINT) $(PYLINTFLAGS) $(PYTHONFILES) || exit 0
+	@$(PYLINT) $(PYLINTFLAGS) $(PYTHONFILES) || true
 
 # testing
 basic_coverage: clean
