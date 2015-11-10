@@ -1,4 +1,5 @@
 PACKAGE=botibal
+NPROC := $(shell nproc)
 PYTHONFILES := $(shell find . -name '*.py')
 
 all: lint coverage
@@ -30,7 +31,7 @@ opep8: clean
 
 pylint: clean
 	@echo "=== Pylint ==="
-	@pylint $(PYLINTFLAGS) $(PYTHONFILES) || true
+	@pylint -j $(NPROC) $(PYTHONFILES) || true
 
 # testing
 basic_coverage: clean
