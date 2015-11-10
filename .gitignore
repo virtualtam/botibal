@@ -9,4 +9,5 @@ htmlcov
 
 # Packaging & Distribution
 *.egg-info
+build
 dist
