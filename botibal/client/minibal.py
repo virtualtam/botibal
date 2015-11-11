@@ -19,11 +19,16 @@ import sqlite3
 from datetime import datetime
 from email.utils import formatdate
 
-from sleekxmpp import ClientXMPP
-
 from botibal.client.cmd_parser import (BotCmdError, BotCmdParser, BotHelp,
                                        PrivilegeError)
 from botibal.taunt import Tauntionary
+
+try:
+    from sleekxmpp import ClientXMPP
+except ImportError:
+    # pylint: disable=import-error
+    from slixmpp import ClientXMPP
+
 
 TAUNT_LEN_MAX = 197  # 197 (10) is 101 (14), which is kinda cool, huh?
 
@@ -79,13 +84,13 @@ class MiniBal(ClientXMPP):
 
         try:
             args = self.cmd_parser.parse_args(msg['body'].split(' '))
-        except BotCmdError, err:
+        except BotCmdError as err:
             self.send_reply(msg, '\n{}'.format(err))
             return
 
         try:
             args.func(msg, args)
-        except PrivilegeError, err:
+        except PrivilegeError as err:
             self.send_reply(msg, str(err))
 
     def muc_hook(self, msg):
@@ -113,7 +118,7 @@ class MiniBal(ClientXMPP):
 
         try:
             args = self.muc_cmd_parser.parse_args(cmdline.split(' '))
-        except BotHelp, err:
+        except BotHelp as err:
             self.say_group('\n{}'.format(err))
             return
         except BotCmdError:
@@ -133,7 +138,7 @@ class MiniBal(ClientXMPP):
         else:
             self.say_group('I quit!')
 
-        self.disconnect(wait=5.0, send_close=True)
+        self.disconnect(wait=5.0)
 
     def send_reply(self, msg, text):
         """
@@ -191,9 +196,11 @@ class MiniBal(ClientXMPP):
 
             We salute you!
         """
-        matches = re.match(ur'^(\w+) {}([ ]?[!]?)'.format(self.nick),
-                           msg['body'],
-                           re.UNICODE)
+        matches = re.match(
+            r'^(\w+) {}([ ]?[!]?)'.format(self.nick),
+            msg['body'],
+            re.UNICODE
+        )
 
         if matches is None:
             return False
@@ -230,7 +237,7 @@ class MiniBal(ClientXMPP):
                 self.tauntionary.add_taunt(' '.join(args.add),
                                            msg['from'].resource,
                                            args.aggro)
-            except ValueError, err:
+            except ValueError as err:
                 self.send_reply(msg, 'error: {}'.format(err))
 
         elif args.aggro:

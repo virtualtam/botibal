@@ -5,7 +5,8 @@ Botibal configuration
 
 JID = 'imahbot@lulzse.cx'
 PASSWORD = 'OhGoshWhereAreTheKeys?'
-ROOM = '1408@dolph.im'
+ROOM = '1408@skyr.im'
 ADMIN_JID = 'thecat@saw.it'
 
+# SleekXMPP specific options
 USE_TLS = True

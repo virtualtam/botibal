@@ -34,7 +34,7 @@ class BotiBal(MiniBal):
                 if matches:
                     try:
                         self.fukung.add_link_url(matches)
-                    except ValueError, err:
+                    except ValueError as err:
                         self.send_reply(msg, 'error: {}'.format(err))
                 return
 

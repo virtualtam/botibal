@@ -2,6 +2,8 @@
 """
 I swear...
 """
+from __future__ import unicode_literals
+
 import random
 
 DEFAULT_AGGRO = 4
@@ -82,7 +84,7 @@ class Tauntionary(object):
 
         self.db_cur.execute(
             'INSERT INTO taunt VALUES(NULL,?,?,?)',
-            (nick.decode('utf-8'), taunt.decode('utf-8'), aggro))
+            (nick, taunt, aggro))
         self.db_conn.commit()
         self.load_from_db()
 

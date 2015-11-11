@@ -5,10 +5,14 @@ botibal.client.botibal unit tests
 # pylint: disable=too-many-public-methods
 import unittest
 
-from sleekxmpp.stanza import Message
-
 from botibal.client.botibal_ import BotiBal
 from tests.client.utils import ClientTestCase, MockMiniBal
+
+try:
+    from sleekxmpp.stanza import Message
+except ImportError:
+    # pylint: disable=import-error
+    from slixmpp.stanza import Message
 
 
 class MockBotiBal(BotiBal, MockMiniBal):

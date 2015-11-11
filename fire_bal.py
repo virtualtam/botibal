@@ -1,7 +1,9 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 """
 Start
 """
+from __future__ import print_function
+
 import config
 import logging
 import sys
@@ -26,6 +28,7 @@ if __name__ == '__main__':
     ARGS = PARSER.parse_args()
 
     if sys.version_info < (3, 0):
+        # pylint: disable=import-error
         from sleekxmpp.util.misc_ops import setdefaultencoding
         setdefaultencoding('utf8')
 
@@ -44,7 +47,13 @@ if __name__ == '__main__':
         BOT = QuizziBal(config.JID, config.PASSWORD, 'Quizzibal',
                         config.ROOM, config.ADMIN_JID)
 
-    if BOT.connect(use_tls=config.USE_TLS):
-        BOT.process(block=True)
+    if sys.version_info < (3, 0):
+        # SleekXMPP
+        if BOT.connect(use_tls=config.USE_TLS):
+            BOT.process(block=True)
+        else:
+            print("Unable to connect")
     else:
-        print 'Unable to connect'
+        # SliXMPP
+        BOT.connect()
+        BOT.process(forever=True)

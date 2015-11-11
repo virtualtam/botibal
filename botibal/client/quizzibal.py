@@ -53,7 +53,7 @@ class QuizziBal(MiniBal):
                 self.quizz.add_question(q_set[0], q_set[1:])
                 self.send_reply(msg, 'Question added: {}\nAnswers: {}'
                                 .format(q_set[0], q_set[1:]))
-            except ValueError, err:
+            except ValueError as err:
                 self.send_reply(msg, 'error: {}'.format(err))
 
         elif args.delete:

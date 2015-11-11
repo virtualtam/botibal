@@ -2,7 +2,9 @@
 
 [![Build Status](https://travis-ci.org/virtualtam/botibal.png?branch=master)](http://travis-ci.org/virtualtam/botibal)
 
-A silly, quizzical XMPP bot based on the [SleekXMPP](https://github.com/fritzy/SleekXMPP) Python library.
+A silly, quizzical XMPP bot based on the
+[SleekXMPP](https://github.com/fritzy/SleekXMPP) (Python 2.7) and
+[SliXMPP](https://dev.louiz.org/projects/slixmpp) (Python 3.4+) Python libraries.
 
 ## Available bots
 ### MiniBal, the minimalist bot
@@ -101,18 +103,10 @@ positional arguments:
 1 - programming, do you speak it, mofo? (Hans)
 ```
 
-## Dependencies
-* python2.7,
-* sleekxmpp,
-* optional - DNS resolution, SSL/TLS verification:
- * dnspython,
- * pyasn1,
- * pyasn1-modules.
-
 ## Installation
 ```bash
-$ virtualenv2 ENV
-$ source ENV/bin/activate
+$ virtualenv <ENV>
+$ source <ENV>/bin/activate
 $ python setup.py sdist
 $ easy_install dist/botibal-x.y.z.tar.gz
 ```
@@ -128,24 +122,37 @@ Copy `config.py.example` to `config.py`, and customize connection values:
 ## Development tools
 ### Test dependencies
 * coverage,
+* isort,
+* pep257,
 * pep8,
 * pylint.
 ```bash
-$ pip install -r requirements.txt
+$ pip install -r tests/requirements.txt
 ```
 
 ### Test makefile
 A Makefile is available with useful dev/test targets:
+
+#### Static analysis
 ```bash
+# run isort import checks:
+$ make isort
+
+# run PEP8 syntax checks:
+$ make pep257
+
 # run PEP8 syntax checks:
 $ make pep8
 
 # run pylint syntax checks:
 $ make pylint
 
-# run both syntax checkers:
+# run all syntax checkers:
 $ make lint
+```
 
+#### Tests
+```bash
 # run all unitary tests
 $ make test
 

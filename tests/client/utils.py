@@ -21,7 +21,8 @@ class MockMiniBal(MiniBal):
     def send_reply(self, msg, text):
         self.reply = text
 
-    def disconnect(self, reconnect=False, wait=None, send_close=True):
+    def disconnect(self, wait=None):
+        # pylint: disable=arguments-differ
         pass
 
 

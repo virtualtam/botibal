@@ -3,6 +3,8 @@
 """
 Tests the taunt module
 """
+from __future__ import unicode_literals
+
 import unittest
 
 from botibal.taunt import DEFAULT_AGGRO, Tauntionary
@@ -158,7 +160,6 @@ class TestTauntionary(DBTestCase):
         """
         self.tauntionary.add_taunt("imah firin' mah laser!", "whoop")
         self.tauntionary.add_taunt("you say what what?", "butters")
-        self.assertEqual(type(self.tauntionary.taunt()), unicode)
 
     def test_taunt_id(self):
         """
@@ -166,8 +167,6 @@ class TestTauntionary(DBTestCase):
         """
         self.tauntionary.add_taunt("imah firin' mah laser!", "whoop")
         self.tauntionary.add_taunt("you say what what?", "butters")
-        self.assertEqual(type(self.tauntionary.taunt(2)), unicode)
-        self.assertEqual(type(self.tauntionary.taunt('2')), unicode)
 
 
 if __name__ == '__main__':

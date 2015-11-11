@@ -2,6 +2,8 @@
 """
 Quizz module
 """
+from __future__ import unicode_literals
+
 import random
 
 
@@ -33,7 +35,7 @@ class ScoreDict(dict):
         Displays the scores
         """
         return '\n'.join(['{}: {}'.format(user, score)
-                          for user, score in self.items()])
+                          for user, score in sorted(self.items())])
 
 
 class Quizz(object):
@@ -50,7 +52,7 @@ class Quizz(object):
 
     def __repr__(self):
         return '\n'.join(['{} - {}'.format(index, que['text'])
-                          for index, que in self.questions.iteritems()])
+                          for index, que in self.questions.items()])
 
     def init_db(self):
         """
@@ -91,20 +93,19 @@ class Quizz(object):
         if question is None or question == '':
             raise ValueError('Empty question')
 
-        if question in [que['text'] for _, que in self.questions.iteritems()]:
+        if question in [que['text'] for _, que in self.questions.items()]:
             raise ValueError('Duplicate question')
 
         if answers is None or answers == [] or answers == ['']:
             raise ValueError('No answers specified')
 
-        self.db_cur.execute('INSERT INTO question VALUES(NULL,?)',
-                            (question.decode('utf-8'),))
+        self.db_cur.execute('INSERT INTO question VALUES(NULL,?)', (question,))
         self.db_conn.commit()
         q_id, = self.db_cur.execute(
             'SELECT id FROM question ORDER BY id DESC LIMIT 1').fetchone()
         for ans in answers:
             self.db_cur.execute('INSERT INTO answer VALUES(NULL,?,?)',
-                                (q_id, ans.decode('utf-8')))
+                                (q_id, ans))
         self.db_conn.commit()
         self.load_from_db()
 
@@ -123,7 +124,7 @@ class Quizz(object):
         Asks a question
         """
         index = random.randint(0, len(self.questions) - 1)
-        self.current_question = self.questions[self.questions.keys()[index]]
+        self.current_question = self.questions[list(self.questions)[index]]
         return self.current_question['text']
 
     def check_answer(self, answer):

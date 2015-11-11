@@ -12,14 +12,14 @@ distclean:
 	@git clean -xdf
 
 botibal: clean
-	@python2 setup.py sdist
+	@python setup.py sdist
 
 # static analysis
 lint: isort pep8 pep257 pylint
 
 isort: clean
 	@echo "=== isort ==="
-	@isort $(PYTHONFILES) --check-only
+	@isort $(PYTHONFILES) --check-only || true
 
 pep%: clean
 	@echo "=== PEP$* ==="
