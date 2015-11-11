@@ -1,2 +1,3 @@
-# -*- coding: utf-8 -*-
-'Botibal unittests'
+"""
+Botibal unittests
+"""

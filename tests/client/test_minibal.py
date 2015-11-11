@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-'botibal.client.minibal unit tests'
+"""
+botibal.client.minibal unit tests
+"""
 # pylint: disable=too-many-public-methods
 import unittest
 
@@ -11,7 +13,10 @@ from tests.client.utils import ClientTestCase, MockMiniBal
 
 
 class TestMiniBal(ClientTestCase):
-    'Covers command parsing'
+    """
+    Covers command parsing
+    """
+
     def setUp(self):
         super(TestMiniBal, self).setUp()
         self.client = MockMiniBal('bot@server.org', 'p455w0rd', 'bot',
@@ -19,24 +24,32 @@ class TestMiniBal(ClientTestCase):
                                   self.test_db)
 
     def test_init(self):
-        'Build-Bot :-)'
+        """
+        Build-Bot :-)
+        """
         MiniBal('bot@server.org', 'p455w0rd', 'bot',
                 'room@server.org', 'admin@server.org', self.test_db)
 
     def test_pm_say(self):
-        'Say something (from PM)'
+        """
+        Say something (from PM)
+        """
         args = self._parse_cmd('say toto')
         args.func(None, args)
         self.assertSayGroupEqual('toto')
 
     def test_muc_say(self):
-        'Say something (from MUC)'
+        """
+        Say something (from MUC)
+        """
         args = self._parse_muc_cmd('say toto')
         args.func(None, args)
         self.assertSayGroupEqual('toto')
 
     def test_say_infinite(self):
-        "Attempt to use the bot's name"
+        """
+        Attempt to use the bot's name
+        """
         msg = Message()
         cmd = 'say {}'.format(self.client.nick)
 
@@ -51,31 +64,41 @@ class TestMiniBal(ClientTestCase):
                          'Do not try to unleash the infinite fury, ')
 
     def test_date(self):
-        'Tick, tock'
+        """
+        Tick, tock
+        """
         self.client.date(None, self._parse_cmd('date'))
         self.client.date(None, self._parse_cmd('date -i'))
         self.client.date(None, self._parse_cmd('date -r'))
         self.client.date(None, self._parse_cmd('date -f %Y %m %d'))
 
     def test_quit_user(self):
-        'A non-admin user attempts to stop the bot'
+        """
+        A non-admin user attempts to stop the bot
+        """
         with self.assertRaises(PrivilegeError):
             self.client.quit(Message(), None)
 
     def test_quit_custom_message(self):
-        'Disconnect with a custom message'
+        """
+        Disconnect with a custom message
+        """
         self.client.quit(Message(sfrom='admin@server.org'),
                          self._parse_cmd('quit good night!'))
         self.assertSayGroupEqual('good night!')
 
     def test_quit(self):
-        'Disconnect with a custom message'
+        """
+        Disconnect with a custom message
+        """
         self.client.quit(Message(sfrom='admin@server.org'),
                          self._parse_cmd('quit'))
         self.assertSayGroupEqual('I quit!')
 
     def test_muc_empty_taunt(self):
-        'Taunt someone from the MUC (empty tauntionary)'
+        """
+        Taunt someone from the MUC (empty tauntionary)
+        """
         self.client.taunt(None, self._parse_cmd('taunt'))
         self.assertReplyEqual('The tauntionary is empty')
         self.assertSayGroupEqual('')
@@ -84,20 +107,26 @@ class TestMiniBal(ClientTestCase):
         self.assertSayGroupEqual('')
 
     def test_muc_taunt_index(self):
-        'Taunt s/o, with a selected piece'
+        """
+        Taunt s/o, with a selected piece
+        """
         self.client.tauntionary.add_taunt('blorgh!', 'Igor')
         self.client.taunt(None, self._parse_cmd('taunt Hans -n 1'))
         self.assertSayGroupEqual('Hans: blorgh!')
 
     def test_muc_taunt_index_error(self):
-        'Taunt s/o, with a selected piece: IndexError Deluxe Edition'
+        """
+        Taunt s/o, with a selected piece: IndexError Deluxe Edition
+        """
         self.client.tauntionary.add_taunt('blorgh!', 'Igor')
         self.client.taunt(None, self._parse_cmd('taunt Hans -n 86'))
         self.assertReplyEqual("taunt #86 doesn't exist")
         self.assertSayGroupEqual('')
 
     def test_muc_taunt(self):
-        'Taunt someone from the MUC'
+        """
+        Taunt someone from the MUC
+        """
         self.client.tauntionary.add_taunt('blorgh!', 'Igor')
 
         self.client.taunt(None, self._parse_cmd('taunt'))
@@ -106,7 +135,9 @@ class TestMiniBal(ClientTestCase):
         self.assertSayGroupEqual('Grichka: blorgh!')
 
     def test_taunt_nick_with_spaces(self):
-        'Taunt someone from the MUC, whose nick contains spaces'
+        """
+        Taunt someone from the MUC, whose nick contains spaces
+        """
         self.client.tauntionary.add_taunt('blorgh!', 'Igor')
 
         self.client.taunt(None, self._parse_cmd('taunt'))
@@ -115,7 +146,9 @@ class TestMiniBal(ClientTestCase):
         self.assertSayGroupEqual('Grich Ka: blorgh!')
 
     def test_add_too_long_taunt(self):
-        'Attempt to add a taunt that exceeds the max authorized length'
+        """
+        Attempt to add a taunt that exceeds the max authorized length
+        """
         tnt = ''.join(['a'] * TAUNT_LEN_MAX)
 
         self.client.taunt(Message(),
@@ -124,19 +157,25 @@ class TestMiniBal(ClientTestCase):
                          'too long a taunt, sir!')
 
     def test_add_invalid_taunt(self):
-        'Add an invalid taunt'
+        """
+        Add an invalid taunt
+        """
         self.client.taunt(Message(),
                           self._parse_cmd('taunt -a blorgh!'))
         self.assertEqual(self.client.reply,
                          'error: Taunt: empty user nickname')
 
     def test_list_empty_taunt(self):
-        'Ask for the (empty) list of taunts'
+        """
+        Ask for the (empty) list of taunts
+        """
         self.client.taunt(Message(), self._parse_cmd('taunt -l'))
         self.assertEqual(self.client.reply, '\n')
 
     def test_list_taunt_by_aggro(self):
-        'Returns the list of taunts, sorted by aggro level'
+        """
+        Returns the list of taunts, sorted by aggro level
+        """
         self.client.tauntionary.add_taunt('blaaargh?', 'Grishka', 3)
         self.client.tauntionary.add_taunt('blorgh!', 'Igor', 5)
         self.client.taunt(Message(), self._parse_cmd('taunt --lg'))
@@ -144,13 +183,17 @@ class TestMiniBal(ClientTestCase):
                          '\n{}'.format(self.client.tauntionary.list_by_aggro()))
 
     def test_set_taunt_aggro(self):
-        'Set the aggro level of a taunt'
+        """
+        Set the aggro level of a taunt
+        """
         self.client.tauntionary.add_taunt('blaaargh?', 'Grishka', 3)
         self.client.taunt(Message(), self._parse_cmd('taunt -g 2 -n 1'))
         self.assertEqual(self.client.tauntionary.taunts[0][3], 2)
 
     def test_set_taunt_aggro_no_number(self):
-        'Evolutionary void: set the aggro level of nothing'
+        """
+        Evolutionary void: set the aggro level of nothing
+        """
         self.client.tauntionary.add_taunt('blaaargh?', 'Grishka', 3)
         self.client.taunt(Message(), self._parse_cmd('taunt -g 2'))
         self.assertReplyEqual('no taunt specified')

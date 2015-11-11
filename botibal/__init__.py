@@ -1,1 +1,3 @@
-'Botibal: a silly XMPP bot'
+"""
+Botibal: a silly XMPP bot
+"""

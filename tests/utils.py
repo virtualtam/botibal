@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=too-many-public-methods
-'Testing utilities'
+"""
+Testing utilities
+"""
 import os
 import sqlite3
 import unittest
 
 
 class DBTestCase(unittest.TestCase):
-    'SQLite DB testing'
+    """
+    SQLite DB testing
+    """
+
     test_db = os.path.join('tests', 'test.db')
 
     def setUp(self):

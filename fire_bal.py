@@ -1,5 +1,7 @@
 #!/usr/bin/env python2
-'Start'
+"""
+Start
+"""
 import config
 import logging
 import sys

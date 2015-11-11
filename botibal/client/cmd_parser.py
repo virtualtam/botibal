@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-'Bot command parsing utilities'
+"""
+Bot command parsing utilities
+"""
 from argparse import ArgumentParser
 
 
@@ -25,7 +27,10 @@ class PrivilegeError(Exception):
 
 
 class BotCmdParser(ArgumentParser):
-    'Parses bot commands'
+    """
+    Parser for bot commands
+    """
+
     def __init__(self, prog):
         super(BotCmdParser, self).__init__(prog=prog,
                                            add_help=False)

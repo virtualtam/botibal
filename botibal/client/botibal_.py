@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-'Botibal: a silly XMPP bot'
+"""
+Botibal: a silly XMPP bot
+"""
 import codecs
 import re
 
@@ -8,7 +10,10 @@ from botibal.fukung import REGEX, Fukung
 
 
 class BotiBal(MiniBal):
-    'A silly fukung-addict XMPP bot'
+    """
+    A silly fukung-addict XMPP bot
+    """
+
     # pylint: disable=too-many-public-methods
 
     def __init__(self, jid, password, nick, room, admin_jid,
@@ -19,7 +24,9 @@ class BotiBal(MiniBal):
         self.fukung = Fukung(self.db_conn)
 
     def fukung_net(self, msg, args):
-        'Controls Fukung interactions'
+        """
+        Controls Fukung interactions
+        """
         try:
             # message parser
             if args.add:
@@ -44,7 +51,9 @@ class BotiBal(MiniBal):
             self.say_group('da fukung list iz empty! plz browse da intarnetz!')
 
     def rot13(self, _, args):
-        'Applies rot13 on the passed string'
+        """
+        Applies rot13 on the passed string
+        """
         self.say_group(codecs.encode(' '.join(args.text), 'rot_13'))
 
     def add_common_commands(self, subparser):

@@ -1,12 +1,19 @@
 # -*- coding: utf-8 -*-
-'Quizz module'
+"""
+Quizz module
+"""
 import random
 
 
 class ScoreDict(dict):
-    '''Stores the game's scores'''
+    """
+    Stores the game's scores
+    """
+
     def add_score(self, username, score):
-        'Adds a new score for a given user'
+        """
+        Adds a new score for a given user
+        """
         score = int(score)
 
         if username in self:
@@ -15,18 +22,25 @@ class ScoreDict(dict):
             self[username] = score
 
     def reset(self):
-        'Resets the scores for all users'
+        """
+        Resets the scores for all users
+        """
         for username in self:
             self[username] = 0
 
     def results(self):
-        'Displays the scores'
+        """
+        Displays the scores
+        """
         return '\n'.join(['{}: {}'.format(user, score)
                           for user, score in self.items()])
 
 
 class Quizz(object):
-    'Quizz handling'
+    """
+    Quizz handling
+    """
+
     def __init__(self, database_connection):
         self.questions = {}
         self.current_question = None
@@ -40,9 +54,11 @@ class Quizz(object):
 
     def init_db(self):
         """
-        Initializes DB interaction:
-        - creates tables if necessary,
-        - loads data.
+        Initializes DB interaction
+
+        Actions:
+        - create tables if necessary,
+        - load data.
         """
         self.db_cur.execute(
             '''CREATE TABLE IF NOT EXISTS question (
@@ -58,7 +74,9 @@ class Quizz(object):
         self.load_from_db()
 
     def load_from_db(self):
-        'Loads questions and answers from the database'
+        """
+        Loads questions and answers from the database
+        """
         for q_id, q_text in self.db_cur.execute(
                 'SELECT id, text FROM question').fetchall():
             ans = self.db_cur.execute(
@@ -67,7 +85,9 @@ class Quizz(object):
             self.questions[q_id] = {'text': q_text, 'answers': ans}
 
     def add_question(self, question, answers):
-        'Adds a new question'
+        """
+        Adds a new question
+        """
         if question is None or question == '':
             raise ValueError('Empty question')
 
@@ -89,7 +109,9 @@ class Quizz(object):
         self.load_from_db()
 
     def delete_question(self, index):
-        'Deletes a question and its answers'
+        """
+        Deletes a question and its answers
+        """
         self.db_cur.execute('DELETE FROM answer WHERE question_id=?', (index,))
         self.db_cur.execute('DELETE FROM question WHERE id=?', (index,))
         self.db_conn.commit()
@@ -97,12 +119,16 @@ class Quizz(object):
         return 'The question #{} has been deleted'.format(index)
 
     def ask_next_question(self):
-        'Asks a question'
+        """
+        Asks a question
+        """
         index = random.randint(0, len(self.questions) - 1)
         self.current_question = self.questions[self.questions.keys()[index]]
         return self.current_question['text']
 
     def check_answer(self, answer):
-        'Checks if an answer is suitable'
+        """
+        Checks if an answer is suitable
+        """
         return answer.lower() in [ans[1].lower()
                                   for ans in self.current_question['answers']]

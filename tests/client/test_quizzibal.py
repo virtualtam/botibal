@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-'botibal.client.quizzibal unit tests'
+"""
+botibal.client.quizzibal unit tests
+"""
 # pylint: disable=too-many-public-methods
 import re
 import unittest
@@ -11,11 +13,15 @@ from tests.client.utils import ClientTestCase, MockMiniBal
 
 
 class MockQuizziBal(QuizziBal, MockMiniBal):
-    'Mock client for local testing'
+    """
+    Mock client for local testing
+    """
 
 
 class TestQuizziBal(ClientTestCase):
-    'Covers command parsing'
+    """
+    Covers command parsing
+    """
 
     @classmethod
     def setUpClass(cls):
@@ -28,7 +34,9 @@ class TestQuizziBal(ClientTestCase):
                                     self.test_db)
 
     def _check_answer(self, answer, nick):
-        'Wraps answer checking'
+        """
+        Wraps answer checking
+        """
         matches = re.search(
             r"^(" + self.client.nick +
             r")(( )?(: |, )?)((\w| |[\.,:éèçàêâûîôäëüïö'])+)",
@@ -36,18 +44,24 @@ class TestQuizziBal(ClientTestCase):
         return self.client.check_answer(matches, nick)
 
     def test_init(self):
-        'Build-Bot :-)'
+        """
+        Build-Bot :-)
+        """
         QuizziBal('bot@server.org', 'p455w0rd', 'bot',
                   'room@server.org', 'admin@server.org', self.test_db)
 
     def test_question_add(self):
-        'Add a question'
+        """
+        Add a question
+        """
         self.client.question(Message(),
                              self._parse_cmd('question -a {}'.format(self.que)))
         self.assertReplyEqual("Question added: q?\nAnswers: ['a1', 'a2', 'a3']")
 
     def test_question_add_duplicate(self):
-        'Add a question. Twice.'
+        """
+        Add a question. Twice.
+        """
         self.client.question(Message(),
                              self._parse_cmd('question -a {}'.format(self.que)))
         self.assertReplyEqual("Question added: q?\nAnswers: ['a1', 'a2', 'a3']")
@@ -56,21 +70,27 @@ class TestQuizziBal(ClientTestCase):
         self.assertReplyEqual('error: Duplicate question')
 
     def test_question_add_error(self):
-        'Add a question with no answers'
+        """
+        Add a question with no answers
+        """
         args = self._parse_cmd('question -a q?#')
 
         self.client.question(Message(), args)
         self.assertReplyEqual('error: No answers specified')
 
     def test_question_list(self):
-        'List questions'
+        """
+        List questions
+        """
         self.client.quizz.add_question('q1?', ['a1'])
         self.client.quizz.add_question('q2?', ['a2'])
         self.client.question(Message(), self._parse_cmd('question -l'))
         self.assertReplyEqual('\n1 - q1?\n2 - q2?')
 
     def test_question_del(self):
-        'Delete a question'
+        """
+        Delete a question
+        """
         self.client.quizz.add_question('q1?', ['a1'])
         self.client.quizz.add_question('q2?', ['a2'])
         self.client.question(Message(), self._parse_cmd('question -d 2'))
@@ -78,7 +98,9 @@ class TestQuizziBal(ClientTestCase):
         self.assertReplyEqual('The question #2 has been deleted')
 
     def test_control_next(self):
-        'Skip the question'
+        """
+        Skip the question
+        """
         # add and ask a first question
         self.client.quizz.add_question('q1?', ['a1'])
         self.client.control_quizz(Message(), self._parse_cmd('quizz start'))
@@ -94,24 +116,32 @@ class TestQuizziBal(ClientTestCase):
         self.assertSayGroupEqual('q2?')
 
     def test_control_reset(self):
-        'Reset the scores'
+        """
+        Reset the scores
+        """
         self.client.control_quizz(Message(), self._parse_cmd('quizz reset'))
         self.assertSayGroupEqual('All scores have been reset!')
 
     def test_control_score(self):
-        'Display current scores'
+        """
+        Display current scores
+        """
         self.client.control_quizz(Message(), self._parse_cmd('quizz score'))
         self.assertReplyEqual('\nScores:\n')
 
     def test_control_start(self):
-        'Start the quizz'
+        """
+        Start the quizz
+        """
         self.client.quizz.add_question('q1?', ['a1'])
         self.client.control_quizz(Message(), self._parse_cmd('quizz start'))
         self.assertTrue(self.client.running)
         self.assertSayGroupEqual('q1?')
 
     def test_control_start_bis(self):
-        'Start the quizz. Twice.'
+        """
+        Start the quizz. Twice.
+        """
         self.client.quizz.add_question('q1?', ['a1'])
         self.client.control_quizz(Message(), self._parse_cmd('quizz start'))
         self.assertTrue(self.client.running)
@@ -121,7 +151,9 @@ class TestQuizziBal(ClientTestCase):
         self.assertReplyEqual('The quizz is already running ^_^')
 
     def test_control_stop(self):
-        'Stop the quizz'
+        """
+        Stop the quizz
+        """
         self.client.quizz.add_question('q1?', ['a1'])
         self.client.control_quizz(Message(), self._parse_cmd('quizz start'))
         self.assertTrue(self.client.running)
@@ -129,12 +161,16 @@ class TestQuizziBal(ClientTestCase):
         self.assertFalse(self.client.running)
 
     def test_check_answer_no_quizz(self):
-        "You're asking me answers, but you already know the question!"
+        """
+        You're asking me answers, but you already know the question!
+        """
         self.assertEqual(self._check_answer('You know nothing, Jones No', None),
                          'Sorry, there is no quizz running')
 
     def test_check_good_answer(self):
-        'Someone has given the right answer'
+        """
+        Someone has given the right answer
+        """
         self.client.quizz.add_question('q1?', ['a1'])
         self.client.control_quizz(Message(), self._parse_cmd('quizz start'))
         self.assertEqual(self._check_answer('a1', 'Hans'),
@@ -142,7 +178,9 @@ class TestQuizziBal(ClientTestCase):
                          'Next question: q1?')
 
     def test_check_wrong_answer(self):
-        'Someone has given the wrong answer'
+        """
+        Someone has given the wrong answer
+        """
         self.client.quizz.add_question('q1?', ['a1'])
         self.client.control_quizz(Message(), self._parse_cmd('quizz start'))
         self.assertEqual(self._check_answer('1a', 'Hans'),
