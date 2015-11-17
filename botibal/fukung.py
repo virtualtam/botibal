@@ -3,6 +3,7 @@
 Fukung interaction
 """
 import random
+import re
 
 BASE_URL = 'http://www.fukung.net/v/'
 REGEX = r'http://(www\.)?fukung.net/v/(\d+)/(\w+)\.(\w+)'
@@ -20,8 +21,10 @@ class Fukung(object):
         self.init_db()
 
     def __repr__(self):
-        return '\n'.join(['{} - {}{}'.format(f_id, BASE_URL, f_link)
-                          for f_id, f_link in self.link_ids])
+        return '\n'.join(
+            ['{} - {}{}'.format(f_id, BASE_URL, f_link)
+             for f_id, f_link in self.link_ids]
+        )
 
     def init_db(self):
         """
@@ -44,14 +47,20 @@ class Fukung(object):
         """
         self.link_ids = self.db_cur.execute('SELECT * FROM fukung').fetchall()
 
-    def add_link_url(self, matchobject):
+    def add_link_url(self, text):
         """
         Adds a new link url
         """
-        # TODO: move regex matching from botibal to there (error handling)
-        link_id = '{}/{}.{}'.format(matchobject.group(2),
-                                    matchobject.group(3),
-                                    matchobject.group(4))
+        matches = re.search(REGEX, text)
+
+        if not matches:
+            return
+
+        link_id = '{}/{}.{}'.format(
+            matches.group(2),
+            matches.group(3),
+            matches.group(4)
+        )
         self.add_link_id(link_id)
 
     def add_link_id(self, link_id):
@@ -71,4 +80,5 @@ class Fukung(object):
         """
         return '{}{}'.format(
             BASE_URL,
-            self.link_ids[random.randint(0, len(self.link_ids) - 1)][1])
+            self.link_ids[random.randint(0, len(self.link_ids) - 1)][1]
+        )

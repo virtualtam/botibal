@@ -70,7 +70,7 @@ class TestFukung(DBTestCase):
         Add a valid fukung link
         """
         url = BASE_URL + '4/v4l1d.gif'
-        self.fukung.add_link_url(re.match(REGEX, url))
+        self.fukung.add_link_url(url)
         self.assertEqual(self.fukung.link_ids,
                          [(1, u'4/v4l1d.gif')])
 
@@ -79,8 +79,8 @@ class TestFukung(DBTestCase):
         Add a valid fukung link
         """
         url = BASE_URL + '/5/1nv4l1d'
-        with self.assertRaises(AttributeError):
-            self.fukung.add_link_url(re.match(REGEX, url))
+        self.fukung.add_link_url(url)
+        self.assertEqual(self.fukung.link_ids, [])
 
     def test_repr(self):
         """

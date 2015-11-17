@@ -3,10 +3,9 @@
 Botibal: a silly XMPP bot
 """
 import codecs
-import re
 
 from botibal.client.minibal import MiniBal
-from botibal.fukung import REGEX, Fukung
+from botibal.fukung import Fukung
 
 
 class BotiBal(MiniBal):
@@ -30,12 +29,10 @@ class BotiBal(MiniBal):
         try:
             # message parser
             if args.add:
-                matches = re.search(REGEX, args.add)
-                if matches:
-                    try:
-                        self.fukung.add_link_url(matches)
-                    except ValueError as err:
-                        self.send_reply(msg, 'error: {}'.format(err))
+                try:
+                    self.fukung.add_link_url(args.add)
+                except ValueError as err:
+                    self.send_reply(msg, 'error: {}'.format(err))
                 return
 
             elif args.list:
@@ -83,14 +80,10 @@ class BotiBal(MiniBal):
         super(BotiBal, self).muc_hook(msg)
 
         # parse the messages to find fukung links
-        matches = re.search(REGEX, msg['body'])
-        if matches:
-            try:
-                self.fukung.add_link_url(matches)
-            except ValueError:
-                # don't print anything!
-                # users are entitled to post the same link twice, thrice...
-                pass
-            return True
-
+        try:
+            self.fukung.add_link_url(msg['body'])
+        except ValueError:
+            # don't print anything!
+            # users are entitled to post the same link twice, thrice...
+            pass
         return False
