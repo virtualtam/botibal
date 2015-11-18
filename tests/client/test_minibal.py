@@ -2,8 +2,8 @@
 """
 botibal.client.minibal unit tests
 """
-# pylint: disable=too-many-public-methods
 import unittest
+from datetime import timedelta
 
 from botibal.client.cmd_parser import PrivilegeError
 from botibal.client.minibal import TAUNT_LEN_MAX, MiniBal
@@ -21,11 +21,18 @@ class TestMiniBal(ClientTestCase):
     Covers command parsing
     """
 
+    # pylint: disable=too-many-public-methods,invalid-name
+
     def setUp(self):
         super(TestMiniBal, self).setUp()
-        self.client = MockMiniBal('bot@server.org', 'p455w0rd', 'bot',
-                                  'room@server.org', 'admin@server.org',
-                                  self.test_db)
+        self.client = MockMiniBal(
+            'bot@server.org',
+            'p455w0rd',
+            'bot',
+            'room@server.org',
+            'admin@server.org',
+            self.test_db
+        )
 
     def test_init(self):
         """
@@ -98,6 +105,76 @@ class TestMiniBal(ClientTestCase):
         self.client.quit(Message(sfrom='admin@server.org'),
                          self._parse_cmd('quit'))
         self.assertSayGroupEqual('I quit!')
+
+    def test_muc_plop(self):
+        """
+        Plop the bot
+        """
+        self.client.plop({
+            'mucnick': 'Igor',
+            'body': 'plop {}'.format(self.client.nick),
+        })
+        self.assertSayGroupEqual('plop Igor')
+
+    def test_muc_plop_custom_text(self):
+        """
+        Plop the bot - free-form messages
+        """
+        self.client.plop({
+            'mucnick': 'Igor',
+            'body': 'hey {} !'.format(self.client.nick),
+        })
+        self.assertSayGroupEqual('hey Igor !')
+
+    def test_muc_plop_twice_same_nick(self):
+        """
+        Plop the bot twice with the same nick
+        """
+        self.client.plop({
+            'mucnick': 'Igor',
+            'body': 'plop {}'.format(self.client.nick),
+        })
+        self.assertSayGroupEqual('plop Igor')
+
+        self.client.plop({
+            'mucnick': 'Igor',
+            'body': 'plop {}'.format(self.client.nick),
+        })
+        self.assertSayGroupEqual('meh.')
+
+    def test_muc_plop_twice_same_nick_wait(self):
+        """
+        Plop the bot twice with the same nick - wait a day beteen plops
+        """
+        self.client.plop({
+            'mucnick': 'Igor',
+            'body': 'plop {}'.format(self.client.nick),
+        })
+        self.assertSayGroupEqual('plop Igor')
+
+        self.client.plops['Igor'] -= timedelta(days=1, hours=2)
+
+        self.client.plop({
+            'mucnick': 'Igor',
+            'body': 'plop {}'.format(self.client.nick),
+        })
+        self.assertSayGroupEqual('plop Igor')
+
+    def test_muc_plop_twice_different_nick(self):
+        """
+        Plop the bot twice with different nicks
+        """
+        self.client.plop({
+            'mucnick': 'Igor',
+            'body': 'plop {}'.format(self.client.nick),
+        })
+        self.assertSayGroupEqual('plop Igor')
+
+        self.client.plop({
+            'mucnick': 'Grichka',
+            'body': 'yo {}!'.format(self.client.nick),
+        })
+        self.assertSayGroupEqual('yo Grichka!')
 
     def test_muc_empty_taunt(self):
         """

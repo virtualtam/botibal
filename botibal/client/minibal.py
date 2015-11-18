@@ -16,7 +16,7 @@ to add new features/ commands, the following methods can be overriden:
 """
 import re
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 from email.utils import formatdate
 
 from botibal.client.cmd_parser import (BotCmdError, BotCmdParser, BotHelp,
@@ -62,7 +62,7 @@ class MiniBal(ClientXMPP):
 
         self.db_conn = sqlite3.connect(database, check_same_thread=False)
         self.tauntionary = Tauntionary(self.db_conn)
-        self.plops = set()
+        self.plops = dict()
 
     def session_start(self, event):
         """
@@ -197,7 +197,7 @@ class MiniBal(ClientXMPP):
             We salute you!
         """
         matches = re.match(
-            r'^(\w+) {}([ ]?[!]?)'.format(self.nick),
+            r'^(\w+) {nick}([ ]?[!]?)'.format(nick=self.nick),
             msg['body'],
             re.UNICODE
         )
@@ -205,16 +205,22 @@ class MiniBal(ClientXMPP):
         if matches is None:
             return False
 
-        if msg['mucnick'] in self.plops:
-            # prevent infinite plopping
-            # yeah, having several bots can be nasty ;-)
-            self.say_group('meh.')
+        now = datetime.now()
 
-        else:
-            self.plops.add(msg['mucnick'])
-            self.say_group('{} {}{}'.format(matches.group(1),
-                                            msg['mucnick'],
-                                            matches.group(2)))
+        if (msg['mucnick'] in self.plops.keys() and
+                now - self.plops[msg['mucnick']] < timedelta(days=1)):
+            # the plopping courtesy is to happen at most once a day
+            self.say_group('meh.')
+            return True
+
+        self.plops[msg['mucnick']] = now
+        self.say_group(
+            '{} {}{}'.format(
+                matches.group(1),
+                msg['mucnick'],
+                matches.group(2)
+            )
+        )
         return True
 
     def taunt(self, msg, args):
