@@ -26,7 +26,11 @@ def run():
     parser = ArgumentParser()
     parser.add_argument(
         'config_file',
-        help="Configuration file"
+        help="configuration file"
+    )
+    parser.add_argument(
+        'database_file',
+        help="data storage file"
     )
     parser.add_argument(
         '-d', '--debug',
@@ -76,6 +80,7 @@ def run():
             config['nick']['botibal'],
             config['muc']['room'],
             config['muc']['admin_jid'],
+            args.database_file
         )
 
     elif args.minibal:
@@ -85,6 +90,7 @@ def run():
             config['nick']['minibal'],
             config['muc']['room'],
             config['muc']['admin_jid'],
+            args.database_file
         )
 
     elif args.quizzibal:
@@ -94,6 +100,7 @@ def run():
             config['nick']['quizzibal'],
             config['muc']['room'],
             config['muc']['admin_jid'],
+            args.database_file
         )
 
     if sys.version_info < (3, 0):

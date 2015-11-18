@@ -25,11 +25,12 @@ A silly, quizzical XMPP bot based on the
 
 ## Usage
 ```bash
-$ botibal [-h] [-d] (-b | -m | -q) config_file
+$ botibal [-h] [-d] (-b | -m | -q) config_file database_file
 
 positional arguments:
-  config_file      Configuration file
-
+  config_file      configuration file
+  database_file    data storage file
+  
 optional arguments:
   -h, --help       show this help message and exit
   -d, --debug      set logging to DEBUG
