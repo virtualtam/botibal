@@ -21,6 +21,11 @@ setup(
     url='https://github.com/virtualtam/botibal',
     keywords="bot jabber xmpp quizz chat",
     packages=find_packages(exclude=['tests.*', 'tests']),
+    entry_points={
+        'console_scripts': [
+            'botibal = botibal.client.run:run',
+        ],
+    },
     install_requires=[
         'pyasn1==0.1.9',
         'pyasn1-modules==0.0.8',

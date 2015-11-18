@@ -25,7 +25,10 @@ A silly, quizzical XMPP bot based on the
 
 ## Usage
 ```bash
-$ ./fire_bal.py  [-h] [-d] (-b | -m | -q)
+$ botibal [-h] [-d] (-b | -m | -q) config_file
+
+positional arguments:
+  config_file      Configuration file
 
 optional arguments:
   -h, --help       show this help message and exit
@@ -104,15 +107,17 @@ positional arguments:
 ```
 
 ## Installation
+### From sources
+Clone and `cd` to this repository, then run the following commands:
 ```bash
-$ virtualenv <ENV>
+$ virtualenv <OPTIONS> <ENV>
 $ source <ENV>/bin/activate
-$ python setup.py sdist
-$ easy_install dist/botibal-x.y.z.tar.gz
+$ pip install -r requirements.txt
+$ make install
 ```
 
 ## Configuration
-Copy `config.py.example` to `config.py`, and customize connection values:
+Copy `config.ini.example` to `config.ini`, and customize connection values:
 * nickname;
 * Jabber ID (JID);
 * Room/Groupchat address;

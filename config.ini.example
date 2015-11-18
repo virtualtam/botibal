@@ -1,0 +1,15 @@
+[auth]
+jid: imahbot@lulzse.cx
+password: OhGoshWhereAreTheKeys?
+
+[muc]
+room: 1408@skyr.im
+admin_jid: thecat@saw.it
+
+[nick]
+botibal: Botibal
+minibal: Minibal
+quizzibal: Quizzibal
+
+[sleekxmpp]
+use_tls: True

@@ -1,5 +1,5 @@
 # Botibal
-config.py
+config.ini
 *.db
 *.log
 
