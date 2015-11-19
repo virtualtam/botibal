@@ -5,7 +5,4 @@ python:
 install:
   - pip install -r requirements.txt -r tests/requirements.txt
 script:
-  - make lint
-  - make basic_coverage
-  - make sdist
-  - make build
+  - make

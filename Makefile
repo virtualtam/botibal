@@ -1,8 +1,9 @@
 PACKAGE=botibal
 NPROC := $(shell nproc)
-PYTHONFILES := $(shell find . -name '*.py')
+PYTHONFILES := $(shell find . -not -path "*build*" -not -path "*.tox*" -name '*.py')
 
-all: lint coverage
+.PHONY: clean distclean
+all: lint basic_coverage sdist build
 
 clean:
 	@rm -rf build dist
@@ -26,7 +27,7 @@ lint: isort pep8 pep257 pylint
 
 isort: clean
 	@echo "=== isort ==="
-	@isort $(PYTHONFILES) --check-only
+	@isort $(PYTHONFILES) --check-only --diff
 
 pep%: clean
 	@echo "=== PEP$* ==="
