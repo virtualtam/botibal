@@ -1,9 +1,13 @@
 Botibal
 =======
 
-.. image:: https://travis-ci.org/virtualtam/botibal.png?branch=master
+.. image:: https://img.shields.io/travis/virtualtam/botibal/master.svg
    :target: http://travis-ci.org/virtualtam/botibal
-   :alt: Build status
+   :alt: Travis build status
+
+.. image:: https://img.shields.io/pypi/v/botibal.svg
+   :target: https://pypi.python.org/pypi/botibal
+   :alt: PyPI package
 
 A silly, quizzical XMPP bot based on the `SleekXMPP`_ (2.7) and
 `SliXMPP`_ (3.4+) libraries.
