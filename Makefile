@@ -3,7 +3,7 @@ NPROC := $(shell nproc)
 PYTHONFILES := $(shell find . -not -path "*build*" -not -path "*.tox*" -name '*.py')
 
 .PHONY: clean distclean
-all: lint basic_coverage sdist build
+all: lint coverage sdist build
 
 clean:
 	@rm -rf build dist
@@ -19,8 +19,18 @@ sdist: clean
 build: clean
 	@python setup.py build
 
+bdist_wheel: clean
+	@python setup.py bdist_wheel
+
 install: build
 	@python setup.py install
+
+# pypi
+twine: sdist bdist_wheel
+	@twine upload dist/* -s
+
+test_twine: sdist bdist_wheel
+	@twine upload dist/* -s -r pypitest --skip-existing
 
 # static analysis
 lint: isort pep8 pep257 pylint
@@ -38,12 +48,12 @@ pylint: clean
 	@pylint -j $(NPROC) $(PYTHONFILES)
 
 # testing
-basic_coverage: clean
+coverage: clean
 	@echo "=== Coverage ==="
 	@coverage run --source=$(PACKAGE) -m unittest discover -s tests
 	@coverage report
 
-coverage: clean basic_coverage
+coverage_html: clean coverage
 	@rm -rf htmlcov
 	@coverage html
 

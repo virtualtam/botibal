@@ -2,6 +2,7 @@
 """
 Setup script for Botibal
 """
+import codecs
 import sys
 
 from setuptools import find_packages, setup
@@ -11,16 +12,21 @@ if sys.version_info < (3, 0):
 else:
     XMPP = 'slixmpp==1.1'
 
+with codecs.open('README.rst', 'r', 'utf-8') as f_readme:
+    LONG_DESCRIPTION = f_readme.read()
+
 setup(
     name='botibal',
-    version='0.7.2',
+    version='0.7.3',
     description="The silly, quizzical XMPP bot",
+    long_description=LONG_DESCRIPTION,
     author="VirtualTam",
-    author_email='virtualtam@flibidi.org',
+    author_email='virtualtam@flibidi.net',
     license='MIT',
     url='https://github.com/virtualtam/botibal',
     keywords="bot jabber xmpp quizz chat",
     packages=find_packages(exclude=['tests.*', 'tests']),
+    data_files=[('config', ['config.example.ini'])],
     entry_points={
         'console_scripts': [
             'botibal = botibal.client.run:run',

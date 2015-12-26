@@ -1,0 +1,8 @@
+# Set default behavior
+*       text=auto eol=lf
+
+# Ensure sources are processed
+*.cfg   text
+*.ini   text
+*.py    text diff=python
+*.rst   text
