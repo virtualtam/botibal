@@ -17,7 +17,7 @@ with codecs.open('README.rst', 'r', 'utf-8') as f_readme:
 
 setup(
     name='botibal',
-    version='0.7.4',
+    version='0.7.5',
     description="The silly, quizzical XMPP bot",
     long_description=LONG_DESCRIPTION,
     author="VirtualTam",
