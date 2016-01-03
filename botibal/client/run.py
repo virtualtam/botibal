@@ -8,6 +8,8 @@ import logging
 import sys
 from argparse import ArgumentParser
 
+from botibal import __title__, __version__
+
 from . import BotiBal, MiniBal, QuizziBal
 
 # pylint: disable=import-error
@@ -39,6 +41,12 @@ def run():
         dest='loglevel',
         const=logging.DEBUG,
         default=logging.INFO
+    )
+    parser.add_argument(
+        '-v', '--version',
+        help="display the program version",
+        action='version',
+        version='{} v{}'.format(__title__, __version__)
     )
     kind = parser.add_mutually_exclusive_group(required=True)
     kind.add_argument(

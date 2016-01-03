@@ -1,7 +1,8 @@
 Installation
 ============
 
-Botibal is currently compatible with `Python`_ 2.7 and 3.4, and has been tested on Linux.
+Botibal is currently compatible with `Python`_ 2.7, 3.4 and 3.5, and has been
+tested on Linux.
 
 .. _Python: https://www.python.org/
 
