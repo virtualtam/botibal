@@ -3,8 +3,9 @@
 # Specify a configuration file.
 #rcfile=
 
-# Profiled execution.
-profile=no
+# Python code to execute, usually for sys.path manipulation such as
+# pygtk.require().
+#init-hook=
 
 # Add files or directories to the blacklist. They should be base names, not
 # paths.
@@ -18,7 +19,7 @@ persistent=no
 load-plugins=
 
 # Use multiple processes to speed up Pylint.
-#jobs=1
+jobs=1
 
 # Allow loading of arbitrary C extensions. Extensions are imported into the
 # active Python interpreter and may run arbitrary code.
@@ -58,7 +59,7 @@ confidence=
 # --enable=similarities". If you want to run only the classes checker, but have
 # no Warning level messages displayed, use"--disable=all --enable=classes
 # --disable=W"
-disable=filter-builtin-not-iterating,input-builtin,backtick,raising-string,next-method-called,standarderror-builtin,intern-builtin,round-builtin,useless-suppression,reduce-builtin,unichr-builtin,file-builtin,parameter-unpacking,no-absolute-import,unicode-builtin,indexing-exception,coerce-method,basestring-builtin,old-ne-operator,suppressed-message,long-suffix,metaclass-assignment,print-statement,using-cmp-argument,cmp-builtin,cmp-method,hex-method,apply-builtin,execfile-builtin,reload-builtin,setslice-method,zip-builtin-not-iterating,delslice-method,old-raise-syntax,xrange-builtin,old-octal-literal,oct-method,buffer-builtin,import-star-module-level,old-division,getslice-method,range-builtin-not-iterating,nonzero-method,dict-iter-method,raw_input-builtin,map-builtin-not-iterating,long-builtin,unpacking-in-except,dict-view-method,coerce-builtin,locally-disabled
+disable=filter-builtin-not-iterating,input-builtin,backtick,raising-string,next-method-called,standarderror-builtin,intern-builtin,round-builtin,useless-suppression,reduce-builtin,unichr-builtin,file-builtin,parameter-unpacking,no-absolute-import,unicode-builtin,indexing-exception,coerce-method,basestring-builtin,old-ne-operator,suppressed-message,long-suffix,metaclass-assignment,print-statement,using-cmp-argument,cmp-builtin,cmp-method,hex-method,apply-builtin,execfile-builtin,reload-builtin,setslice-method,zip-builtin-not-iterating,delslice-method,old-raise-syntax,xrange-builtin,old-octal-literal,oct-method,buffer-builtin,import-star-module-level,old-division,getslice-method,range-builtin-not-iterating,nonzero-method,dict-iter-method,raw_input-builtin,map-builtin-not-iterating,long-builtin,unpacking-in-except,dict-view-method,coerce-builtin,locally-disabled,wrong-import-order,redefined-variable-type
 
 
 [REPORTS]
@@ -83,38 +84,9 @@ reports=no
 # (RP0004).
 evaluation=10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10)
 
-# Add a comment according to your evaluation note. This is used by the global
-# evaluation report (RP0004).
-comment=no
-
 # Template used to display messages. This is a python new-style format string
 # used to format the message information. See doc for all details
 #msg-template=
-
-
-[TYPECHECK]
-
-# Tells whether missing members accessed in mixin class should be ignored. A
-# mixin class is detected if its name ends with "mixin" (case insensitive).
-ignore-mixin-members=yes
-
-# List of module names for which member attributes should not be checked
-# (useful for modules/projects where namespaces are manipulated during runtime
-# and thus existing member attributes cannot be deduced by static analysis
-ignored-modules=
-
-# List of classes names for which member attributes should not be checked
-# (useful for classes with attributes dynamically set).
-ignored-classes=SQLObject
-
-# When zope mode is activated, add a predefined set of Zope acquired attributes
-# to generated-members.
-zope=no
-
-# List of members which are set dynamically and missed by pylint inference
-# system, and so shouldn't trigger E0201 when accessed. Python regular
-# expressions are accepted.
-generated-members=REQUEST,acl_users,aq_parent
 
 
 [SPELLING]
@@ -152,12 +124,6 @@ additional-builtins=
 callbacks=cb_,_cb
 
 
-[MISCELLANEOUS]
-
-# List of note tags to take in consideration, separated by a comma.
-notes=FIXME,XXX,TODO
-
-
 [FORMAT]
 
 # Maximum number of characters on a single line.
@@ -187,25 +153,34 @@ indent-after-paren=4
 expected-line-ending-format=
 
 
-[SIMILARITIES]
+[TYPECHECK]
 
-# Minimum lines number of a similarity.
-min-similarity-lines=4
+# Tells whether missing members accessed in mixin class should be ignored. A
+# mixin class is detected if its name ends with "mixin" (case insensitive).
+ignore-mixin-members=yes
 
-# Ignore comments when computing similarities.
-ignore-comments=yes
+# List of module names for which member attributes should not be checked
+# (useful for modules/projects where namespaces are manipulated during runtime
+# and thus existing member attributes cannot be deduced by static analysis
+ignored-modules=
 
-# Ignore docstrings when computing similarities.
-ignore-docstrings=yes
+# List of classes names for which member attributes should not be checked
+# (useful for classes with attributes dynamically set).
+ignored-classes=SQLObject
 
-# Ignore imports when computing similarities.
-ignore-imports=no
+# List of members which are set dynamically and missed by pylint inference
+# system, and so shouldn't trigger E0201 when accessed. Python regular
+# expressions are accepted.
+generated-members=REQUEST,acl_users,aq_parent
+
+
+[MISCELLANEOUS]
+
+# List of note tags to take in consideration, separated by a comma.
+notes=FIXME,XXX,TODO
 
 
 [BASIC]
-
-# Required attributes for module, separated by a comma
-required-attributes=
 
 # List of builtins function names that should not be used, separated by a comma
 bad-functions=map,filter,input
@@ -223,23 +198,11 @@ name-group=
 # Include a hint for the correct naming format with invalid-name
 include-naming-hint=no
 
-# Regular expression matching correct function names
-function-rgx=[a-z_][a-z0-9_]{2,30}$
+# Regular expression matching correct method names
+method-rgx=[a-z_][a-z0-9_]{2,30}$
 
-# Naming hint for function names
-function-name-hint=[a-z_][a-z0-9_]{2,30}$
-
-# Regular expression matching correct variable names
-variable-rgx=[a-z_][a-z0-9_]{2,30}$
-
-# Naming hint for variable names
-variable-name-hint=[a-z_][a-z0-9_]{2,30}$
-
-# Regular expression matching correct constant names
-const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
-
-# Naming hint for constant names
-const-name-hint=(([A-Z_][A-Z0-9_]*)|(__.*__))$
+# Naming hint for method names
+method-name-hint=[a-z_][a-z0-9_]{2,30}$
 
 # Regular expression matching correct attribute names
 attr-rgx=[a-z_][a-z0-9_]{2,30}$
@@ -247,29 +210,11 @@ attr-rgx=[a-z_][a-z0-9_]{2,30}$
 # Naming hint for attribute names
 attr-name-hint=[a-z_][a-z0-9_]{2,30}$
 
-# Regular expression matching correct argument names
-argument-rgx=[a-z_][a-z0-9_]{2,30}$
-
-# Naming hint for argument names
-argument-name-hint=[a-z_][a-z0-9_]{2,30}$
-
 # Regular expression matching correct class attribute names
 class-attribute-rgx=([A-Za-z_][A-Za-z0-9_]{2,30}|(__.*__))$
 
 # Naming hint for class attribute names
 class-attribute-name-hint=([A-Za-z_][A-Za-z0-9_]{2,30}|(__.*__))$
-
-# Regular expression matching correct inline iteration names
-inlinevar-rgx=[A-Za-z_][A-Za-z0-9_]*$
-
-# Naming hint for inline iteration names
-inlinevar-name-hint=[A-Za-z_][A-Za-z0-9_]*$
-
-# Regular expression matching correct class names
-class-rgx=[A-Z_][a-zA-Z0-9]+$
-
-# Naming hint for class names
-class-name-hint=[A-Z_][a-zA-Z0-9]+$
 
 # Regular expression matching correct module names
 module-rgx=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
@@ -277,11 +222,41 @@ module-rgx=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
 # Naming hint for module names
 module-name-hint=(([a-z_][a-z0-9_]*)|([A-Z][a-zA-Z0-9]+))$
 
-# Regular expression matching correct method names
-method-rgx=[a-z_][a-z0-9_]{2,30}$
+# Regular expression matching correct class names
+class-rgx=[A-Z_][a-zA-Z0-9]+$
 
-# Naming hint for method names
-method-name-hint=[a-z_][a-z0-9_]{2,30}$
+# Naming hint for class names
+class-name-hint=[A-Z_][a-zA-Z0-9]+$
+
+# Regular expression matching correct function names
+function-rgx=[a-z_][a-z0-9_]{2,30}$
+
+# Naming hint for function names
+function-name-hint=[a-z_][a-z0-9_]{2,30}$
+
+# Regular expression matching correct argument names
+argument-rgx=[a-z_][a-z0-9_]{2,30}$
+
+# Naming hint for argument names
+argument-name-hint=[a-z_][a-z0-9_]{2,30}$
+
+# Regular expression matching correct constant names
+const-rgx=(([A-Z_][A-Z0-9_]*)|(__.*__))$
+
+# Naming hint for constant names
+const-name-hint=(([A-Z_][A-Z0-9_]*)|(__.*__))$
+
+# Regular expression matching correct variable names
+variable-rgx=[a-z_][a-z0-9_]{2,30}$
+
+# Naming hint for variable names
+variable-name-hint=[a-z_][a-z0-9_]{2,30}$
+
+# Regular expression matching correct inline iteration names
+inlinevar-rgx=[A-Za-z_][A-Za-z0-9_]*$
+
+# Naming hint for inline iteration names
+inlinevar-name-hint=[A-Za-z_][A-Za-z0-9_]*$
 
 # Regular expression which should only match function or class names that do
 # not require a docstring.
@@ -297,6 +272,21 @@ docstring-min-length=-1
 # Logging modules to check that the string format arguments are in logging
 # function parameter format
 logging-modules=logging
+
+
+[SIMILARITIES]
+
+# Minimum lines number of a similarity.
+min-similarity-lines=4
+
+# Ignore comments when computing similarities.
+ignore-comments=yes
+
+# Ignore docstrings when computing similarities.
+ignore-docstrings=yes
+
+# Ignore imports when computing similarities.
+ignore-imports=yes
 
 
 [DESIGN]
@@ -352,10 +342,6 @@ int-import-graph=
 
 
 [CLASSES]
-
-# List of interface methods to ignore, separated by a comma. This is used for
-# instance to not check methods defines in Zope's Interface base class.
-ignore-iface-methods=isImplementedBy,deferred,extends,names,namesAndDescriptions,queryDescriptionFor,getBases,getDescriptionFor,getDoc,getName,getTaggedValue,getTaggedValueTags,isEqualOrExtendedBy,setTaggedValue,isImplementedByInstancesOf,adaptWith,is_implemented_by
 
 # List of method names used to declare (i.e. assign) instance attributes.
 defining-attr-methods=__init__,__new__,setUp
