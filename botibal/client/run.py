@@ -60,7 +60,6 @@ def run():
     args = parser.parse_args()
 
     config = ConfigParser()
-    config.sections()
     config.read(args.config_file)
 
     if sys.version_info < (3, 0):
