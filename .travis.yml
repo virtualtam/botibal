@@ -1,8 +1,11 @@
 language: python
 python:
   - 3.4
-  - 2.7
+env:
+  - TOXENV=py27
+  - TOXENV=py34
+  - TOXENV=docs
 install:
-  - pip install -r requirements/tests.txt
+  - pip install -r requirements/tox.txt
 script:
-  - make
+  - tox
