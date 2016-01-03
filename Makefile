@@ -1,6 +1,11 @@
 PACKAGE=botibal
 NPROC := $(shell nproc)
-PYTHONFILES := $(shell find . -not -path "*build*" -not -path "*.tox*" -name '*.py')
+PYTHONFILES := \
+	$(shell find . \
+		-not -path "*build*" \
+		-not -path "*docs*" \
+		-not -path "*.tox*" \
+		-name '*.py')
 
 .PHONY: clean distclean
 all: lint coverage sdist build
@@ -31,6 +36,10 @@ twine: sdist bdist_wheel
 
 test_twine: sdist bdist_wheel
 	@twine upload dist/* -s -r pypitest --skip-existing
+
+# sphinx documentation
+sphinx_%: clean
+	@cd docs && $(MAKE) $*
 
 # static analysis
 lint: isort pep8 pep257 pylint

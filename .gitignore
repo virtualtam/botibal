@@ -8,6 +8,9 @@ config.ini
 .tox
 htmlcov
 
+# Documentation (Sphinx)
+_build
+
 # Packaging & Distribution
 *.egg-info
 build

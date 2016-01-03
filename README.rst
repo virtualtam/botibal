@@ -217,8 +217,8 @@ A Makefile is available with useful dev/test targets:
    # take a look at the report
    $ <browser> htmlcov/index.html
 
-Tox
-^^^
+Testing with Tox
+^^^^^^^^^^^^^^^^
 
 Alternatively, if you have
 `Tox`_ installed, as well as
