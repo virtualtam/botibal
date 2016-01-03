@@ -4,6 +4,7 @@ config.ini
 *.log
 
 # Tests
+.cache
 .coverage
 .tox
 htmlcov
