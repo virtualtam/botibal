@@ -1,5 +1,5 @@
 -r sphinx.txt
 -r tests.txt
--r tox.txt
 coverage==4.0.3
+tox==2.3.1
 twine==1.6.5
