@@ -1,5 +1,4 @@
--r sphinx.txt
+-r docs.txt
 -r tests.txt
-coverage==4.0.3
 tox==2.3.1
 twine==1.6.5

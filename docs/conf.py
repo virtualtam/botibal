@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#
-# Botibal documentation build configuration file, created by
-# sphinx-quickstart on Sat Jan  2 23:29:32 2016.
+"""
+Botibal documentation build configuration file
+"""
 import os
 import shlex
 import sys
