@@ -35,43 +35,6 @@ Tests:
 * `coverage`_;
 * `unittest`_.
 
-Make targets
-^^^^^^^^^^^^^
-
-A Makefile is available with useful dev/test targets:
-
-Static analysis:
-
-.. code-block:: bash
-
-   # run isort import checks
-   $ make isort
-   
-   # run PEP8 syntax checks
-   $ make pep257
-   
-   # run PEP8 syntax checks
-   $ make pep8
-   
-   # run pylint syntax checks
-   $ make pylint
-   
-   # run all syntax checkers
-   $ make lint
-
-Tests:
-
-.. code-block:: bash
-
-   # run all unitary tests
-   $ make test
-   
-   # run all unit tests, generate an HTML coverage report
-   $ make coverage
-
-   # take a look at the report
-   $ <browser> htmlcov/index.html
-
 Tox
 ^^^
 
