@@ -12,11 +12,26 @@ class MockMiniBal(MiniBal):
     Mock client for local testing
     """
 
-    reply = ''
-    text = ''
+    def __init__(self, jid, password, nick, room, admin_jid, database):
+        # pylint: disable=too-many-arguments
+        super(MockMiniBal, self).__init__(
+            jid, password, nick, room, admin_jid, database
+        )
+        self.reply = ''
+        self.muc_history = []
+
+    @property
+    def text(self):
+        """
+        Last message sent to the MUC
+        """
+        try:
+            return self.muc_history[-1]
+        except IndexError:
+            return ''
 
     def say_group(self, text):
-        self.text = text
+        self.muc_history.append(text)
 
     def send_reply(self, msg, text):
         self.reply = text

@@ -3,6 +3,9 @@
 Botibal: a silly XMPP bot
 """
 import codecs
+import decimal
+import math
+import re
 
 from botibal.client.minibal import MiniBal
 from botibal.fukung import Fukung
@@ -53,6 +56,48 @@ class BotiBal(MiniBal):
         """
         self.say_group(codecs.encode(' '.join(args.text), 'rot_13'))
 
+    def factorial(self, body):
+        """
+        Perpetuates the legacy of /u/ExpectedFactorialBot/. Well, kind of.
+
+        Looks for chunks of text looking like factorial expressions, computes
+        them and proudly tells the results to the world.
+
+        Limitations/choices:
+        - process 1- to 4-digit numbers only
+        - big figures are displayed using the scientific notation
+        """
+        matches = re.findall(r'\d+\s?!', body, re.UNICODE)
+
+        if matches == []:
+            return False
+
+        for match in matches:
+            number = int(match[:-1].strip())
+            if number > 9999:
+                self.say_group("I like trains!")
+                continue
+            try:
+                if number < 11:
+                    self.say_group(
+                        '{number}! = {factorial}'.format(
+                            number=number,
+                            factorial=math.factorial(number)
+                        )
+                    )
+                    continue
+
+                self.say_group(
+                    '{number}! = {factorial:.2E}'.format(
+                        number=number,
+                        factorial=decimal.Decimal(math.factorial(number))
+                    )
+                )
+            except ValueError:
+                continue
+
+        return True
+
     def add_common_commands(self, subparser):
         super(BotiBal, self).add_common_commands(subparser)
 
@@ -78,6 +123,9 @@ class BotiBal(MiniBal):
 
     def muc_hook(self, msg):
         super(BotiBal, self).muc_hook(msg)
+
+        if self.factorial(msg['body']):
+            return True
 
         # parse the messages to find fukung links
         try:
