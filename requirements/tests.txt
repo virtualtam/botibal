@@ -1,9 +1,9 @@
 -r common.txt
-coverage==4.0.3
+coverage==4.2
 isort==4.2.5
 pep8==1.7.0
 pydocstyle==1.0.0
-pylint==1.5.5
-pytest==2.9.1
-pytest-cov==2.2.1
-pytest-pylint==0.5.0
+pylint==1.6.4
+pytest==3.0.1
+pytest-cov==2.3.1
+pytest-pylint==0.6.0
