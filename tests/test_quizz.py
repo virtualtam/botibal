@@ -3,8 +3,6 @@
 """
 Tests the quizz module
 """
-from __future__ import unicode_literals
-
 import unittest
 
 from botibal.quizz import Quizz, ScoreDict

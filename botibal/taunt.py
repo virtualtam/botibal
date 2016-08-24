@@ -2,8 +2,6 @@
 """
 I swear...
 """
-from __future__ import unicode_literals
-
 import random
 
 DEFAULT_AGGRO = 4

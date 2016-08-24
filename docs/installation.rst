@@ -1,7 +1,7 @@
 Installation
 ============
 
-Botibal is currently compatible with `Python`_ 2.7, 3.4 and 3.5, and has been
+Botibal is currently compatible with `Python`_ 3.4 and 3.5, and has been
 tested on Linux.
 
 .. _Python: https://www.python.org/
@@ -21,7 +21,7 @@ With pip & virtualenv (recommended)
 -----------------------------------
 
 To install Botibal in a Python `virtualenv`_
-(here with Python 2.7 as the default interpreter):
+(here with Python 3.5 as the default interpreter):
 
 .. code-block:: bash
 
@@ -36,11 +36,11 @@ To install Botibal in a Python `virtualenv`_
 
   # check which packages have been installed
   (botibal) $ pip freeze
+  aiodns==1.0.1
   botibal==0.7.5
   pyasn1==0.1.9
   pyasn1-modules==0.0.8
-  sleekxmpp==1.3.1
-  wheel==0.24.0
+  slixmpp==1.1
 
 .. _virtualenv: http://docs.python-guide.org/en/latest/dev/virtualenvs/
 

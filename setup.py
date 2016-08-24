@@ -1,18 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Setup script for Botibal
 """
 import codecs
 import os
 import re
-import sys
 
 from setuptools import find_packages, setup
-
-if sys.version_info < (3, 0):
-    XMPP = 'sleekxmpp==1.3.1'
-else:
-    XMPP = 'slixmpp==1.1'
 
 
 def get_long_description():
@@ -54,7 +48,7 @@ setup(
     install_requires=[
         'pyasn1==0.1.9',
         'pyasn1-modules==0.0.8',
-        XMPP,
+        'slixmpp==1.1',
     ],
     extras_require={
         'DNS': ['dnspython==1.12.0'],
@@ -65,8 +59,6 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Operating System :: POSIX :: Linux',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',

@@ -5,15 +5,11 @@ botibal.client.minibal unit tests
 import unittest
 from datetime import timedelta
 
+from slixmpp.stanza import Message
+
 from botibal.client.cmd_parser import PrivilegeError
 from botibal.client.minibal import TAUNT_LEN_MAX, MiniBal
 from tests.client.utils import ClientTestCase, MockMiniBal
-
-try:
-    from sleekxmpp.stanza import Message
-except ImportError:
-    # pylint: disable=import-error
-    from slixmpp.stanza import Message
 
 
 class TestMiniBal(ClientTestCase):

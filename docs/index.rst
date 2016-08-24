@@ -1,10 +1,8 @@
 Welcome to Botibal's documentation!
 ===================================
 
-A silly, quizzical XMPP bot based on the `SleekXMPP`_ (2.7) and
-`SliXMPP`_ (3.4+) libraries.
+A silly, quizzical XMPP bot based on the `SliXMPP`_ (3.4+) library.
 
-.. _SleekXMPP: https://github.com/fritzy/SleekXMPP
 .. _SliXMPP: https://dev.louiz.org/projects/slixmpp
 
 .. toctree::

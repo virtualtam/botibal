@@ -19,15 +19,11 @@ import sqlite3
 from datetime import datetime, timedelta
 from email.utils import formatdate
 
+from slixmpp import ClientXMPP
+
 from botibal.client.cmd_parser import (BotCmdError, BotCmdParser, BotHelp,
                                        PrivilegeError)
 from botibal.taunt import Tauntionary
-
-try:
-    from sleekxmpp import ClientXMPP
-except ImportError:
-    # pylint: disable=import-error
-    from slixmpp import ClientXMPP
 
 
 TAUNT_LEN_MAX = 197  # 197 (10) is 101 (14), which is kinda cool, huh?

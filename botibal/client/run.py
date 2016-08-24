@@ -2,23 +2,13 @@
 """
 Bot entrypoint
 """
-from __future__ import absolute_import, unicode_literals
-
 import logging
-import sys
 from argparse import ArgumentParser
+from configparser import ConfigParser
 
 from botibal import __title__, __version__
 
 from . import BotiBal, MiniBal, QuizziBal
-
-# pylint: disable=import-error
-try:
-    # Python 3
-    from configparser import ConfigParser
-except ImportError:
-    # Python 2
-    from ConfigParser import ConfigParser
 
 
 def run():
@@ -70,11 +60,6 @@ def run():
     config = ConfigParser()
     config.read(args.config_file)
 
-    if sys.version_info < (3, 0):
-        # pylint: disable=import-error
-        from sleekxmpp.util.misc_ops import setdefaultencoding
-        setdefaultencoding('utf8')
-
     logging.basicConfig(
         level=args.loglevel,
         format='%(levelname)-8s %(message)s'
@@ -110,13 +95,5 @@ def run():
             args.database_file
         )
 
-    if sys.version_info < (3, 0):
-        # SleekXMPP
-        if bot.connect(use_tls=config['sleekxmpp']['use_tls']):
-            bot.process(block=True)
-        else:
-            logging.warning("Unable to connect")
-    else:
-        # SliXMPP
-        bot.connect()
-        bot.process(forever=True)
+    bot.connect()
+    bot.process(forever=True)

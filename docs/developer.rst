@@ -27,8 +27,8 @@ Tools
 Static analysis:
 
 * `isort`_: check imports ordering & formatting;
-* `PEP257`_: check doctsring formatting;
 * `PEP8`_: miscellaneous language checks;
+* `pydocstyle`_: check doctsring formatting (formerly `PEP257`_);
 * `Pylint`_: all-in-one syntax checker.
 
 Tests:
@@ -77,7 +77,7 @@ Tox
 
 Alternatively, if you have
 `Tox`_ installed, as well as
-both Python 2.7 and 3.4 interpreters available:
+both Python 3.4 and 3.5 interpreters available:
 
 .. code-block:: bash
 
@@ -88,6 +88,7 @@ both Python 2.7 and 3.4 interpreters available:
 .. _isort: https://github.com/timothycrosley/isort#readme
 .. _PEP257: http://pep257.readthedocs.org
 .. _PEP8: http://pep8.readthedocs.org
+.. _pydocstyle: http://www.pydocstyle.org/en/latest/
 .. _Pylint: http://www.pylint.org/
 .. _Tox: http://tox.readthedocs.org/en/latest/
 .. _unittest: https://docs.python.org/3.4/library/unittest.html

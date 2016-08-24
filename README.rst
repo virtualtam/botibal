@@ -13,10 +13,8 @@ Botibal
    :target: http://botibal.readthedocs.org/en/latest/?badge=latest
    :alt: Documentation Status
 
-A silly, quizzical XMPP bot based on the `SleekXMPP`_ (2.7) and
-`SliXMPP`_ (3.4+) Python libraries.
+A silly, quizzical XMPP bot based on the `SliXMPP`_ (3.4+) Python library.
 
-.. _SleekXMPP: https://github.com/fritzy/SleekXMPP
 .. _SliXMPP: https://dev.louiz.org/projects/slixmpp
 
 Getting started

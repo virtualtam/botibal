@@ -3,8 +3,6 @@
 """
 Tests the taunt module
 """
-from __future__ import unicode_literals
-
 import unittest
 
 from botibal.taunt import DEFAULT_AGGRO, Tauntionary

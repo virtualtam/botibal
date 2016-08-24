@@ -6,14 +6,10 @@ botibal.client.quizzibal unit tests
 import re
 import unittest
 
+from slixmpp.stanza import Message
+
 from botibal.client.quizzibal import QuizziBal
 from tests.client.utils import ClientTestCase, MockMiniBal
-
-try:
-    from sleekxmpp.stanza import Message
-except ImportError:
-    # pylint: disable=import-error
-    from slixmpp.stanza import Message
 
 
 class MockQuizziBal(QuizziBal, MockMiniBal):
