@@ -40,5 +40,5 @@ class BotCmdParser(ArgumentParser):
     def error(self, message):
         raise BotCmdError(message)
 
-    def print_help(self, *args):
-        raise BotHelp(self.format_help(*args))
+    def print_help(self, file=None):
+        raise BotHelp(self.format_help())

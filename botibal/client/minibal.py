@@ -25,7 +25,6 @@ from botibal.client.cmd_parser import (BotCmdError, BotCmdParser, BotHelp,
                                        PrivilegeError)
 from botibal.taunt import Tauntionary
 
-
 TAUNT_LEN_MAX = 197  # 197 (10) is 101 (14), which is kinda cool, huh?
 
 
