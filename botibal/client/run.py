@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Bot entrypoint
-"""
+"""Bot entrypoint"""
 import logging
 from argparse import ArgumentParser
 from configparser import ConfigParser
@@ -12,9 +9,7 @@ from . import BotiBal, MiniBal, QuizziBal
 
 
 def run():
-    """
-    Main Botibal entrypoint
-    """
+    """Main Botibal entrypoint"""
     parser = ArgumentParser()
     parser.add_argument(
         'config_file',

@@ -1,8 +1,5 @@
-# -*- coding: utf-8 -*-
+"""Tests the quizz module"""
 # pylint: disable=too-many-public-methods
-"""
-Tests the quizz module
-"""
 import unittest
 
 from botibal.quizz import Quizz, ScoreDict
@@ -10,47 +7,35 @@ from tests.utils import DBTestCase
 
 
 class TestScoreDict(unittest.TestCase):
-    """
-    Handles quizz scores
-    """
+    """Handles quizz scores"""
 
     def setUp(self):
         self.scores = ScoreDict()
 
     def test_add_score(self):
-        """
-        Add a new score
-        """
+        """Add a new score"""
         self.scores.add_score('Luke', 1)
         self.assertEqual(self.scores['Luke'], 1)
 
     def test_add_string_score(self):
-        """
-        Add a new score: integer represented as a string
-        """
+        """Add a new score: integer represented as a string"""
         self.scores.add_score('Luke', '10')
         self.assertEqual(self.scores['Luke'], 10)
 
     def test_add_invalid_score(self):
-        """
-        Attempt to add a string
-        """
+        """Attempt to add a string"""
         with self.assertRaises(ValueError):
             self.scores.add_score('Luke', 'Use the Force')
 
     def test_increment_score(self):
-        """
-        Wow, that guy is good! Look, he scored, twice!
-        """
+        """Wow, that guy is good! Look, he scored, twice!"""
         self.scores.add_score('Luke', 1)
         self.assertEqual(self.scores['Luke'], 1)
         self.scores.add_score('Luke', 1)
         self.assertEqual(self.scores['Luke'], 2)
 
     def test_reset(self):
-        """
-        Re-settle the scores!
-        """
+        """Re-settle the scores!"""
         self.scores.add_score('Luke', 7)
         self.scores.add_score('Vader', 5)
         self.scores.reset()
@@ -58,9 +43,7 @@ class TestScoreDict(unittest.TestCase):
         self.assertEqual(self.scores['Vader'], 0)
 
     def test_results(self):
-        """
-        Display the scores as a string
-        """
+        """Display the scores as a string"""
         self.scores.add_score('Luke', 1)
         self.assertEqual(self.scores.results(), 'Luke: 1')
 
@@ -73,9 +56,7 @@ class TestScoreDict(unittest.TestCase):
 
 
 class TestQuizz(DBTestCase):
-    """
-    Covers Quizz methods
-    """
+    """Covers Quizz methods"""
 
     @classmethod
     def setUpClass(cls):
@@ -87,39 +68,29 @@ class TestQuizz(DBTestCase):
         self.qzz = Quizz(self.db_conn)
 
     def test_add_question(self):
-        """
-        Add a question
-        """
+        """Add a question"""
         self.qzz.add_question(self.question, self.answers)
         self.assertEqual(len(self.qzz.questions), 1)
 
     def test_add_accented_question(self):
-        """
-        Add a question containing accented chars
-        """
+        """Add a question containing accented chars"""
         self.qzz.add_question('åéàè', ['ïùø', 'çīł'])
         self.assertEqual(len(self.qzz.questions), 1)
 
     def test_add_unicode_question(self):
-        """
-        Add a question containing accented chars (unicode)
-        """
+        """Add a question containing accented chars (unicode)"""
         self.qzz.add_question(u'åéàè', [u'ïùø', u'çīł'])
         self.assertEqual(len(self.qzz.questions), 1)
 
     def test_add_empty_question(self):
-        """
-        Attempt to add an empty question
-        """
+        """Attempt to add an empty question"""
         with self.assertRaises(ValueError):
             self.qzz.add_question('', self.answers)
         with self.assertRaises(ValueError):
             self.qzz.add_question(None, self.answers)
 
     def test_add_empty_answers(self):
-        """
-        Attempt to add a question with no answers
-        """
+        """Attempt to add a question with no answers"""
         with self.assertRaises(ValueError):
             self.qzz.add_question(self.question, [])
         with self.assertRaises(ValueError):
@@ -128,9 +99,7 @@ class TestQuizz(DBTestCase):
             self.qzz.add_question(self.question, None)
 
     def test_repr(self):
-        """
-        Display quizz questions as a string
-        """
+        """Display quizz questions as a string"""
         self.qzz.add_question(self.question, self.answers)
         self.assertEqual(str(self.qzz), '1 - what is your quest?')
         self.qzz.add_question('what is the capital of Assyria?',
@@ -140,18 +109,14 @@ class TestQuizz(DBTestCase):
                          '2 - what is the capital of Assyria?')
 
     def test_delete_question(self):
-        """
-        Add and delete a question
-        """
+        """Add and delete a question"""
         self.qzz.add_question(self.question, self.answers)
         self.assertEqual(len(self.qzz.questions), 1)
         self.qzz.delete_question(1)
         self.assertEqual(len(self.qzz.questions), 0)
 
     def test_check_answer(self):
-        """
-        What is your favorite color?
-        """
+        """What is your favorite color?"""
         self.qzz.add_question('what is your favorite color?',
                               ['blue', 'blue.'])
         self.qzz.ask_next_question()

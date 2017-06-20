@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Botibal: a silly XMPP bot
-"""
+"""Botibal: a silly XMPP bot"""
 import codecs
 import decimal
 import math
@@ -12,9 +9,7 @@ from botibal.fukung import Fukung
 
 
 class BotiBal(MiniBal):
-    """
-    A silly fukung-addict XMPP bot
-    """
+    """A silly fukung-addict XMPP bot"""
 
     # pylint: disable=too-many-public-methods
 
@@ -26,9 +21,7 @@ class BotiBal(MiniBal):
         self.fukung = Fukung(self.db_conn)
 
     def fukung_net(self, msg, args):
-        """
-        Controls Fukung interactions
-        """
+        """Controls Fukung interactions"""
         try:
             # message parser
             if args.add:
@@ -51,14 +44,11 @@ class BotiBal(MiniBal):
             self.say_group('da fukung list iz empty! plz browse da intarnetz!')
 
     def rot13(self, _, args):
-        """
-        Applies rot13 on the passed string
-        """
+        """Applies rot13 on the passed string"""
         self.say_group(codecs.encode(' '.join(args.text), 'rot_13'))
 
     def factorial(self, body):
-        """
-        Perpetuates the legacy of /u/ExpectedFactorialBot/. Well, kind of.
+        """Perpetuates the legacy of /u/ExpectedFactorialBot/. Well, kind of.
 
         Looks for chunks of text looking like factorial expressions, computes
         them and proudly tells the results to the world.

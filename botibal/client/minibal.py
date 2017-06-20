@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-MiniBal: a minimalist jabber bot
+"""MiniBal: a minimalist jabber bot
 
 Contains the core structure for XMPP bot-i-bals:
  - common features,
@@ -29,9 +27,7 @@ TAUNT_LEN_MAX = 197  # 197 (10) is 101 (14), which is kinda cool, huh?
 
 
 class MiniBal(ClientXMPP):
-    """
-    A minimalist XMPP bot
-    """
+    """A minimalist XMPP bot"""
 
     # pylint: disable=too-many-public-methods,too-many-instance-attributes
 
@@ -60,18 +56,14 @@ class MiniBal(ClientXMPP):
         self.plops = dict()
 
     def session_start(self, event):
-        """
-        Starts an XMPP session and connects to a MUC
-        """
+        """Starts an XMPP session and connects to a MUC"""
         # pylint: disable=unused-argument
         self.send_presence()
         self.get_roster()
         self.plugin['xep_0045'].joinMUC(self.room, self.nick, wait=True)
 
     def message(self, msg):
-        """
-        Handles PM messages and maps them to user commands
-        """
+        """Handles PM messages and maps them to user commands"""
         if msg['mucnick'] == self.nick:
             return
         if msg['type'] not in ('chat', 'normal'):
@@ -89,16 +81,12 @@ class MiniBal(ClientXMPP):
             self.send_reply(msg, str(err))
 
     def muc_hook(self, msg):
-        """
-        MUC hook executed before parsing commands
-        """
+        """MUC hook executed before parsing commands"""
         if self.plop(msg):
             return True
 
     def muc_message(self, msg):
-        """
-        Handles MUC messages and maps them to user commands
-        """
+        """Handles MUC messages and maps them to user commands"""
         if msg['mucnick'] == self.nick:
             return
 
@@ -122,9 +110,7 @@ class MiniBal(ClientXMPP):
         args.func(msg, args)
 
     def quit(self, msg, args):
-        """
-        Logs out
-        """
+        """Logs out"""
         if msg['from'].bare != self.admin_jid:
             raise PrivilegeError('nah. admin only!')
 
@@ -136,16 +122,12 @@ class MiniBal(ClientXMPP):
         self.disconnect(wait=5.0)
 
     def send_reply(self, msg, text):
-        """
-        Replies to a private message
-        """
+        """Replies to a private message"""
         # pylint: disable=no-self-use
         msg.reply(text).send()
 
     def say(self, msg, args):
-        """
-        Says something
-        """
+        """Says something"""
         if self.nick in args.text:
             self.send_reply(
                 msg,
@@ -156,15 +138,11 @@ class MiniBal(ClientXMPP):
         self.say_group(' '.join(args.text))
 
     def say_group(self, text):
-        """
-        Sends a message to the MUC
-        """
+        """Sends a message to the MUC"""
         self.send_message(mto=self.room, mbody=text, mtype='groupchat')
 
     def date(self, _, args):
-        """
-        Tick, tock
-        """
+        """Tick, tock"""
         curdate = datetime.today()
 
         if args.format:
@@ -186,10 +164,9 @@ class MiniBal(ClientXMPP):
         self.say_group(date_str)
 
     def plop(self, msg):
-        """
-        For those about to plop
+        """For those about to plop
 
-            We salute you!
+        We salute you!
         """
         matches = re.match(
             r'^(\w+) {nick}([ ]?[!]?)'.format(nick=self.nick),
@@ -219,9 +196,7 @@ class MiniBal(ClientXMPP):
         return True
 
     def taunt(self, msg, args):
-        """
-        Controls taunt interactions
-        """
+        """Controls taunt interactions"""
         if args.lg:
             self.send_reply(msg, '\n{}'.format(
                 self.tauntionary.list_by_aggro()))
@@ -270,9 +245,7 @@ class MiniBal(ClientXMPP):
                 self.send_reply(msg, 'The tauntionary is empty')
 
     def add_common_commands(self, subparser):
-        """
-        Adds common message / MUC commands to a subparser
-        """
+        """Adds common message / MUC commands to a subparser"""
         p_say = subparser.add_parser('say', help='say something')
         p_say.add_argument('text', type=str, nargs='+')
         p_say.set_defaults(func=self.say)
@@ -288,9 +261,7 @@ class MiniBal(ClientXMPP):
         p_date.set_defaults(func=self.date)
 
     def add_message_commands(self, subparser):
-        """
-        Adds message commands to a subparser
-        """
+        """Adds message commands to a subparser"""
         p_quit = subparser.add_parser('quit', help='tells the bot to stop')
         p_quit.add_argument('text', type=str, nargs='*')
         p_quit.set_defaults(func=self.quit)
@@ -310,15 +281,11 @@ class MiniBal(ClientXMPP):
         p_taunt.set_defaults(func=self.taunt)
 
     def add_muc_commands(self, subparser):
-        """
-        Adds groupchat commands to a subparser
-        """
+        """Adds groupchat commands to a subparser"""
         pass
 
     def setup_command_parsers(self):
-        """
-        Setups message and MUC command parsers
-        """
+        """Setups message and MUC command parsers"""
         # message (PM) commands
         msg_sub = self.cmd_parser.add_subparsers()
         self.add_common_commands(msg_sub)

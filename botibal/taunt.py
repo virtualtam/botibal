@@ -1,16 +1,11 @@
-# -*- coding: utf-8 -*-
-"""
-I swear...
-"""
+"""I swear..."""
 import random
 
 DEFAULT_AGGRO = 4
 
 
 class Tauntionary(object):
-    """
-    A nice collection of charming sentences
-    """
+    """A nice collection of charming sentences"""
 
     def __init__(self, database_connection):
         self.taunts = []
@@ -24,8 +19,7 @@ class Tauntionary(object):
              for t_id, t_nick, t_text, t_aggro in self.taunts])
 
     def init_db(self):
-        """
-        Initializes DB interaction
+        """Initializes DB interaction
 
         Actions:
         - create table if necessary,
@@ -43,15 +37,11 @@ class Tauntionary(object):
         self.load_from_db()
 
     def load_from_db(self):
-        """
-        Loads taunts from the database
-        """
+        """Loads taunts from the database"""
         self.taunts = self.db_cur.execute('SELECT * FROM taunt').fetchall()
 
     def list_by_aggro(self):
-        """
-        Lists all taunts, sorted by aggro level
-        """
+        """Lists all taunts, sorted by aggro level"""
         taunts = self.db_cur.execute('SELECT id, text, aggro FROM taunt '
                                      'ORDER BY aggro, id').fetchall()
 
@@ -68,9 +58,7 @@ class Tauntionary(object):
         return t_list
 
     def add_taunt(self, taunt, nick, aggro=DEFAULT_AGGRO):
-        """
-        Adds a new taunt
-        """
+        """Adds a new taunt"""
         if taunt is None or taunt == '':
             raise ValueError('Empty taunt')
 
@@ -87,18 +75,14 @@ class Tauntionary(object):
         self.load_from_db()
 
     def set_aggro(self, t_id, aggro):
-        """
-        Changes the aggressivity level of a taunt
-        """
+        """Changes the aggressivity level of a taunt"""
         self.db_cur.execute('UPDATE taunt SET aggro=? WHERE id=?',
                             (abs(int(aggro)), int(t_id)))
         self.db_conn.commit()
         self.load_from_db()
 
     def taunt(self, t_id=None):
-        """
-        You piece of...
-        """
+        """You piece of..."""
         if t_id is not None:
             return self.taunts[int(t_id) - 1][2]
         return self.taunts[random.randint(0, len(self.taunts) - 1)][2]

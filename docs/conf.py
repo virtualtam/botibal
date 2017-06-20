@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Botibal documentation build configuration file
-"""
+"""Botibal documentation build configuration file"""
 import os
 import shlex
 import sys

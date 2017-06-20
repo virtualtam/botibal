@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Fukung interaction
-"""
+"""Fukung interaction"""
 import random
 import re
 
@@ -10,9 +7,7 @@ REGEX = r'http://(www\.)?fukung.net/v/(\d+)/(\w+)\.(\w+)'
 
 
 class Fukung(object):
-    """
-    Manages fukung.net links
-    """
+    """Manages fukung.net links"""
 
     def __init__(self, database_connection):
         self.link_ids = []
@@ -27,8 +22,7 @@ class Fukung(object):
         )
 
     def init_db(self):
-        """
-        Initializes DB interaction
+        """Initializes DB interaction
 
         Actions:
         - create table if necessary,
@@ -42,15 +36,11 @@ class Fukung(object):
         self.load_from_db()
 
     def load_from_db(self):
-        """
-        Loads links from the database
-        """
+        """Loads links from the database"""
         self.link_ids = self.db_cur.execute('SELECT * FROM fukung').fetchall()
 
     def add_link_url(self, text):
-        """
-        Adds a new link url
-        """
+        """Adds a new link url"""
         matches = re.search(REGEX, text)
 
         if not matches:
@@ -64,9 +54,7 @@ class Fukung(object):
         self.add_link_id(link_id)
 
     def add_link_id(self, link_id):
-        """
-        Adds a new link id
-        """
+        """Adds a new link id"""
         if link_id in [lid for _, lid in self.link_ids]:
             raise ValueError('Duplicate Fukung link')
 
@@ -75,9 +63,7 @@ class Fukung(object):
         self.load_from_db()
 
     def get_link(self):
-        """
-        Well, well, well, what do we have here?
-        """
+        """Well, well, well, what do we have here?"""
         return '{}{}'.format(
             BASE_URL,
             self.link_ids[random.randint(0, len(self.link_ids) - 1)][1]

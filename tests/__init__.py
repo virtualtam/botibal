@@ -1,3 +1,1 @@
-"""
-Botibal unittests
-"""
+"""Botibal unittests"""

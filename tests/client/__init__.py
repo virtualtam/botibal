@@ -1,3 +1,1 @@
-"""
-XMPP bots unittests
-"""
+"""XMPP bots unittests"""

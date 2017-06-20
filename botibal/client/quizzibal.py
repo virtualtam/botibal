@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-Quizzibal: a silly XMPP quizz bot
-"""
+"""Quizzibal: a silly XMPP quizz bot"""
 import re
 
 from botibal.client.cmd_parser import BotCmdError, BotHelp
@@ -10,9 +7,7 @@ from botibal.quizz import Quizz, ScoreDict
 
 
 class QuizziBal(MiniBal):
-    """
-    A quizzical XMPP bot
-    """
+    """A quizzical XMPP bot"""
 
     # pylint: disable=too-many-public-methods
 
@@ -26,9 +21,7 @@ class QuizziBal(MiniBal):
         self.running = False
 
     def check_answer(self, matchobject, username):
-        """
-        Handles user answers
-        """
+        """Handles user answers"""
         if not self.running:
             return 'Sorry, there is no quizz running'
 
@@ -44,9 +37,7 @@ class QuizziBal(MiniBal):
             username, answer)
 
     def question(self, msg, args):
-        """
-        Manages quizz questions
-        """
+        """Manages quizz questions"""
         if args.add:
             q_set = (' '.join(args.add)).split('#')
             try:
@@ -63,9 +54,7 @@ class QuizziBal(MiniBal):
             self.send_reply(msg, '\n{}'.format(self.quizz))
 
     def control_quizz(self, msg, args):
-        """
-        Controls the running quizz
-        """
+        """Controls the running quizz"""
         if args.action == 'next':
             self.say_group(self.quizz.ask_next_question())
 
