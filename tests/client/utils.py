@@ -1,7 +1,9 @@
 """botibal.client test utilities"""
 # pylint: disable=too-many-public-methods
+import sqlite3
+import unittest
+
 from botibal.client.minibal import MiniBal
-from tests.utils import DBTestCase
 
 
 class MockMiniBal(MiniBal):
@@ -34,12 +36,20 @@ class MockMiniBal(MiniBal):
         pass
 
 
-class ClientTestCase(DBTestCase):
+class ClientTestCase(unittest.TestCase):
     """Client testing utilities"""
 
     # pylint: disable=invalid-name
 
     client = None
+    test_db = ':memory:'
+
+    def setUp(self):
+        self.db_conn = sqlite3.connect(self.test_db)
+        self.db_cur = self.db_conn.cursor()
+
+    def tearDown(self):
+        self.db_conn.close()
 
     def _parse_cmd(self, cmd):
         """Parses a PM command"""
