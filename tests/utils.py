@@ -1,6 +1,5 @@
 """Testing utilities"""
 # pylint: disable=too-many-public-methods
-import os
 import sqlite3
 import unittest
 
@@ -8,12 +7,9 @@ import unittest
 class DBTestCase(unittest.TestCase):
     """SQLite DB testing"""
 
-    test_db = os.path.join('tests', 'test.db')
+    test_db = ':memory:'
 
     def setUp(self):
-        if os.path.lexists(self.test_db):
-            os.remove(self.test_db)
-
         self.db_conn = sqlite3.connect(self.test_db)
         self.db_cur = self.db_conn.cursor()
 
