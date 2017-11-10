@@ -9,11 +9,10 @@ MiniBal, the minimalist bot
 * allows to taunt users!
 * gives the current date and time.
 
-Botibal, the silly, Fukung-addict-bot
--------------------------------------
+Botibal, the silly bot
+----------------------
 
 * all of MiniBal's features,
-* stores links to fukung.net images,
 * knows basic text ciphering (currently, ROT13).
 
 Quizzibal, the quizzical bot

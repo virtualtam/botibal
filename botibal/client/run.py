@@ -36,7 +36,7 @@ def run():
     kind = parser.add_mutually_exclusive_group(required=True)
     kind.add_argument(
         '-b', '--botibal',
-        help="BotiBal, the Fukung-addict bot",
+        help="BotiBal, the silly bot",
         action='store_true'
     )
     kind.add_argument(

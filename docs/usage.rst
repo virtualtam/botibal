@@ -17,7 +17,7 @@ Run with no arguments to get the help string:
   optional arguments:
     -h, --help       show this help message and exit
     -d, --debug      set logging to DEBUG
-    -b, --botibal    BotiBal, the Fukung-addict bot
+    -b, --botibal    BotiBal, the silly bot
     -m, --minibal    MiniBal, the minimalist bot
     -q, --quizzibal  QuizziBal, the quizzical bot
 
