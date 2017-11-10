@@ -40,12 +40,12 @@ setup(
         ],
     },
     install_requires=[
-        'pyasn1==0.1.9',
-        'pyasn1-modules==0.0.8',
-        'slixmpp==1.1',
+        'pyasn1==0.3.7',
+        'pyasn1-modules==0.1.5',
+        'slixmpp>=1.1,<1.3',
     ],
     extras_require={
-        'DNS': ['dnspython==1.12.0'],
+        'DNS': ['dnspython==1.15.0'],
     },
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -56,5 +56,6 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
         'Topic :: Communications :: Chat',
     ])
