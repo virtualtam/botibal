@@ -11,12 +11,18 @@ class QuizziBal(MiniBal):
 
     # pylint: disable=too-many-public-methods
 
-    def __init__(self, jid, password, nick, room, admin_jid,
-                 database='data.db'):
+    def __init__(self, jid, password, nick, room, admin_jid, session):
         # pylint: disable=too-many-arguments
         super(QuizziBal, self).__init__(
-            jid, password, nick, room, admin_jid, database)
-        self.quizz = Quizz(self.db_conn)
+            jid,
+            password,
+            nick,
+            room,
+            admin_jid,
+            session
+        )
+        self.db_session = session
+        self.quizz = Quizz(self.db_session)
         self.scores = ScoreDict()
         self.running = False
 

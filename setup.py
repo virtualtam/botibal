@@ -42,7 +42,8 @@ setup(
     install_requires=[
         'pyasn1==0.3.7',
         'pyasn1-modules==0.1.5',
-        'slixmpp>=1.1,<1.3',
+        'sqlalchemy>=1.1,<1.2',
+        'slixmpp==1.1',
     ],
     extras_require={
         'DNS': ['dnspython==1.15.0'],

@@ -62,8 +62,8 @@ def test_results(scores):
 @pytest.fixture
 def quizz(testdb):
     """Quizz test object"""
-    _, connection, _ = testdb
-    return Quizz(connection)
+    _, session = testdb
+    return Quizz(session)
 
 
 @pytest.fixture
@@ -76,19 +76,19 @@ def test_add_question(quizz, question):
     """Add a question"""
     que, ans = question
     quizz.add_question(que, ans)
-    assert len(quizz.questions) == 1
+    assert quizz.questions.count() == 1
 
 
 def test_add_accented_question(quizz):
     """Add a question containing accented chars"""
     quizz.add_question('åéàè', ['ïùø', 'çīł'])
-    assert len(quizz.questions) == 1
+    assert quizz.questions.count() == 1
 
 
 def test_add_unicode_question(quizz):
     """Add a question containing accented chars (unicode)"""
     quizz.add_question(u'åéàè', [u'ïùø', u'çīł'])
-    assert len(quizz.questions) == 1
+    assert quizz.questions.count() == 1
 
 
 def test_add_empty_question(quizz, question):
@@ -130,16 +130,19 @@ def test_delete_question(quizz, question):
     # pylint: disable=len-as-condition
     que, ans = question
     quizz.add_question(que, ans)
-    assert len(quizz.questions) == 1
+    assert quizz.questions.count() == 1
 
     quizz.delete_question(1)
-    assert len(quizz.questions) == 0
+    assert quizz.questions.count() == 0
 
 
 def test_check_answer(quizz):
     """What is your favorite color?"""
     quizz.add_question('what is your favorite color?', ['blue', 'blue.'])
-    quizz.ask_next_question()
+    assert quizz.questions.count() == 1
+
+    question = quizz.ask_next_question()
+    assert question == 'what is your favorite color?'
     assert quizz.check_answer('Blue.')
     assert quizz.check_answer('blue')
     assert quizz.check_answer('bLuE')

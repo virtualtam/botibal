@@ -13,7 +13,6 @@ to add new features/ commands, the following methods can be overriden:
  - muc_hook                      pre-command-parsing MUC hook.
 """
 import re
-import sqlite3
 from datetime import datetime, timedelta
 from email.utils import formatdate
 
@@ -31,13 +30,17 @@ class MiniBal(ClientXMPP):
 
     # pylint: disable=too-many-public-methods,too-many-instance-attributes
 
-    def __init__(self, jid, password, nick, room, admin_jid,
-                 database='data.db'):
+    def __init__(self, jid, password, nick, room, admin_jid, session):
         # pylint: disable=too-many-arguments
         super(MiniBal, self).__init__(jid, password)
         self.room = room
         self.nick = nick
         self.admin_jid = admin_jid
+
+        self.db_session = session
+
+        self.plops = dict()
+        self.tauntionary = Tauntionary(self.db_session)
 
         self.cmd_parser = BotCmdParser(prog='{}: '.format(self.nick))
         self.muc_cmd_parser = BotCmdParser(prog='{}: '.format(self.nick))
@@ -50,10 +53,6 @@ class MiniBal(ClientXMPP):
         self.register_plugin('xep_0030')  # Service Discovery
         self.register_plugin('xep_0045')  # Multi-User Chat
         self.register_plugin('xep_0199')  # XMPP Ping
-
-        self.db_conn = sqlite3.connect(database, check_same_thread=False)
-        self.tauntionary = Tauntionary(self.db_conn)
-        self.plops = dict()
 
     def session_start(self, event):
         """Starts an XMPP session and connects to a MUC"""
@@ -197,6 +196,7 @@ class MiniBal(ClientXMPP):
 
     def taunt(self, msg, args):
         """Controls taunt interactions"""
+        # pylint: disable=too-many-branches
         if args.lg:
             self.send_reply(msg, '\n{}'.format(
                 self.tauntionary.list_by_aggro()))
@@ -230,16 +230,18 @@ class MiniBal(ClientXMPP):
                 taunt = '{}: '.format(' '.join(args.nick))
 
             try:
-                try:
+                if args.number:
                     taunt += self.tauntionary.taunt(args.number)
-                except IndexError:
-                    self.send_reply(
-                        msg, "taunt #{} doesn't exist".format(args.number))
-                    return
-                except AttributeError:
+                else:
                     taunt += self.tauntionary.taunt()
 
                 self.say_group(taunt)
+
+            except AttributeError:
+                self.send_reply(
+                    msg,
+                    "taunt #{} doesn't exist".format(args.number)
+                )
 
             except ValueError:
                 self.send_reply(msg, 'The tauntionary is empty')

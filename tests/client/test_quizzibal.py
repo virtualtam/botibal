@@ -29,9 +29,14 @@ class TestQuizziBal(ClientTestCase):
 
     def setUp(self):
         super(TestQuizziBal, self).setUp()
-        self.client = MockQuizziBal('bot@server.org', 'p455w0rd', 'bot',
-                                    'room@server.org', 'admin@server.org',
-                                    self.test_db)
+        self.client = MockQuizziBal(
+            'bot@server.org',
+            'p455w0rd',
+            'bot',
+            'room@server.org',
+            'admin@server.org',
+            self.session
+        )
 
     def _check_answer(self, answer, nick):
         """

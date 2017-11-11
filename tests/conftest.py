@@ -1,16 +1,19 @@
 """Test fixtures"""
-import sqlite3
-
 import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from botibal.models import Base
 
 
 @pytest.fixture
 def testdb():
     """Test database"""
     test_db = ':memory:'
-    connection = sqlite3.connect(test_db)
-    cursor = connection.cursor()
+    engine = create_engine('sqlite:///%s' % test_db)
+    Base.metadata.create_all(engine)
+    session = sessionmaker(bind=engine)()
 
-    yield test_db, connection, cursor
+    yield test_db, session
 
-    connection.close()
+    session.close()

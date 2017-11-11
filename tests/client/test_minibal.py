@@ -1,8 +1,4 @@
-# -*- coding: utf-8 -*-
-"""
-botibal.client.minibal unit tests
-"""
-import unittest
+"""botibal.client.minibal unit tests"""
 from datetime import timedelta
 
 from slixmpp.stanza import Message
@@ -27,7 +23,7 @@ class TestMiniBal(ClientTestCase):
             'bot',
             'room@server.org',
             'admin@server.org',
-            self.test_db
+            self.session
         )
 
     def test_init(self):
@@ -256,8 +252,10 @@ class TestMiniBal(ClientTestCase):
         self.client.tauntionary.add_taunt('blaaargh?', 'Grishka', 3)
         self.client.tauntionary.add_taunt('blorgh!', 'Igor', 5)
         self.client.taunt(Message(), self._parse_cmd('taunt --lg'))
-        self.assertEqual(self.client.reply,
-                         '\n{}'.format(self.client.tauntionary.list_by_aggro()))
+        self.assertEqual(
+            self.client.reply,
+            '\n{}'.format(self.client.tauntionary.list_by_aggro())
+        )
 
     def test_set_taunt_aggro(self):
         """
@@ -265,7 +263,7 @@ class TestMiniBal(ClientTestCase):
         """
         self.client.tauntionary.add_taunt('blaaargh?', 'Grishka', 3)
         self.client.taunt(Message(), self._parse_cmd('taunt -g 2 -n 1'))
-        self.assertEqual(self.client.tauntionary.taunts[0][3], 2)
+        self.assertEqual(self.client.tauntionary.taunts[0].aggro, 2)
 
     def test_set_taunt_aggro_no_number(self):
         """
@@ -274,7 +272,3 @@ class TestMiniBal(ClientTestCase):
         self.client.tauntionary.add_taunt('blaaargh?', 'Grishka', 3)
         self.client.taunt(Message(), self._parse_cmd('taunt -g 2'))
         self.assertReplyEqual('no taunt specified')
-
-
-if __name__ == '__main__':
-    unittest.main()

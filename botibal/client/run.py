@@ -3,7 +3,11 @@ import logging
 from argparse import ArgumentParser
 from configparser import ConfigParser
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from botibal import __title__, __version__
+from botibal.models import Base
 
 from . import BotiBal, MiniBal, QuizziBal
 
@@ -60,6 +64,10 @@ def run():
         format='%(levelname)-8s %(message)s'
     )
 
+    engine = create_engine('sqlite:///%s' % args.database_file)
+    Base.metadata.create_all(engine)
+    session = sessionmaker(bind=engine)()
+
     if args.botibal:
         bot = BotiBal(
             config['auth']['jid'],
@@ -67,7 +75,7 @@ def run():
             config['nick']['botibal'],
             config['muc']['room'],
             config['muc']['admin_jid'],
-            args.database_file
+            session
         )
 
     elif args.minibal:
@@ -77,7 +85,7 @@ def run():
             config['nick']['minibal'],
             config['muc']['room'],
             config['muc']['admin_jid'],
-            args.database_file
+            session
         )
 
     elif args.quizzibal:
@@ -87,7 +95,7 @@ def run():
             config['nick']['quizzibal'],
             config['muc']['room'],
             config['muc']['admin_jid'],
-            args.database_file
+            session
         )
 
     bot.connect()

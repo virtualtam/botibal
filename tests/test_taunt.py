@@ -2,44 +2,50 @@
 # pylint: disable=redefined-outer-name
 import pytest
 
+from botibal.models import Taunt
 from botibal.taunt import DEFAULT_AGGRO, Tauntionary
 
 
 @pytest.fixture
 def tauntionary(testdb):
     """Tauntionary"""
-    _, connection, _ = testdb
-    return Tauntionary(connection)
+    _, session = testdb
+    return Tauntionary(session)
+
+
+def taunts2list(taunts):
+    """Return taunts as a list of tuples"""
+    return [(taunt.id, taunt.nick, taunt.text, taunt.aggro) for taunt in taunts]
 
 
 def test_init_empty_db(testdb):
     """Check a DB is created with an empty 'taunt' table"""
-    _, connection, cursor = testdb
-    tauntionary = Tauntionary(connection)
-    assert tauntionary.taunts == []
-    assert cursor.execute('SELECT * FROM taunt').fetchall() == []
+    _, session = testdb
+    tauntionary = Tauntionary(session)
+    assert tauntionary.taunts.all() == []
+    assert tauntionary.taunts.count() == 0
 
 
 def test_init_db(testdb):
     """Load an existing DB"""
-    _, connection, cursor = testdb
-    tauntionary = Tauntionary(connection)
-    cursor.execute(
-        'INSERT INTO taunt VALUES(NULL,"h4xx0r","rtfm, n00b!", 3)'
-    )
-    connection.commit()
-    tauntionary = Tauntionary(connection)
-    assert tauntionary.taunts == [(1, u'h4xx0r', u'rtfm, n00b!', 3)]
+    _, session = testdb
+    tauntionary = Tauntionary(session)
+    taunt = Taunt(nick="h4xx0r", text="rtfm, n00b!", aggro=3)
+    session.add(taunt)
+    session.commit()
+    tauntionary = Tauntionary(session)
+    assert taunts2list(tauntionary.taunts.all()) == \
+        [(1, u'h4xx0r', u'rtfm, n00b!', 3)]
 
 
 def test_add_taunt(tauntionary):
     """Add new entries to the DB"""
     tauntionary.add_taunt("imah firin' mah laser!", "whoop")
-    assert tauntionary.taunts == \
+    assert taunts2list(tauntionary.taunts.all()) == \
         [(1, u'whoop', u"imah firin' mah laser!", DEFAULT_AGGRO)]
 
     tauntionary.add_taunt("you say what what?", "butters", 3)
-    assert tauntionary.taunts == \
+    assert taunts2list(tauntionary.taunts.all()) == \
         [
             (1, u'whoop', u"imah firin' mah laser!", DEFAULT_AGGRO),
             (2, u'butters', u'you say what what?', 3)
@@ -49,14 +55,14 @@ def test_add_taunt(tauntionary):
 def test_add_accented_taunt(tauntionary):
     """Add a taunt containing accented chars"""
     tauntionary.add_taunt('åéàè', 'ïùø')
-    assert tauntionary.taunts == \
+    assert taunts2list(tauntionary.taunts.all()) == \
         [(1, u'\xef\xf9\xf8', u'\xe5\xe9\xe0\xe8', DEFAULT_AGGRO)]
 
 
 def test_add_unicode_taunt(tauntionary):
     """Add a taunt containing accented chars (unicode)"""
     tauntionary.add_taunt(u'åéàè', u'ïùø')
-    assert tauntionary.taunts == \
+    assert taunts2list(tauntionary.taunts.all()) == \
         [(1, u'\xef\xf9\xf8', u'\xe5\xe9\xe0\xe8', DEFAULT_AGGRO)]
 
 
@@ -90,7 +96,7 @@ def test_empty_taunt_list(tauntionary):
 
 
 def test_list_by_aggro(tauntionary):
-    """List taunts by aggro level"""
+    """List.taunts.all() by aggro level"""
     tauntionary.add_taunt("imah firin' mah laser!", "whoop", 5)
     tauntionary.add_taunt("trololo!", "khail", 3)
     tauntionary.add_taunt("you say what what?", "butters", 3)

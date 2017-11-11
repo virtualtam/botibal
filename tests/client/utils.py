@@ -1,18 +1,21 @@
 """botibal.client test utilities"""
 # pylint: disable=too-many-public-methods
-import sqlite3
 import unittest
 
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
 from botibal.client.minibal import MiniBal
+from botibal.models import Base
 
 
 class MockMiniBal(MiniBal):
     """Mock client for local testing"""
 
-    def __init__(self, jid, password, nick, room, admin_jid, database):
+    def __init__(self, jid, password, nick, room, admin_jid, session):
         # pylint: disable=too-many-arguments
         super(MockMiniBal, self).__init__(
-            jid, password, nick, room, admin_jid, database
+            jid, password, nick, room, admin_jid, session
         )
         self.reply = ''
         self.muc_history = []
@@ -45,11 +48,13 @@ class ClientTestCase(unittest.TestCase):
     test_db = ':memory:'
 
     def setUp(self):
-        self.db_conn = sqlite3.connect(self.test_db)
-        self.db_cur = self.db_conn.cursor()
+        engine = create_engine('sqlite:///%s' % self.test_db)
+        Base.metadata.create_all(engine)
+        Session = sessionmaker(bind=engine)
+        self.session = Session()
 
     def tearDown(self):
-        self.db_conn.close()
+        self.session.close()
 
     def _parse_cmd(self, cmd):
         """Parses a PM command"""
