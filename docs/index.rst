@@ -1,7 +1,7 @@
 Welcome to Botibal's documentation!
 ===================================
 
-A silly, quizzical XMPP bot based on the `SliXMPP`_ (3.4+) library.
+A silly, quizzical XMPP bot based on the `SliXMPP`_ (3.5+) library.
 
 .. _SliXMPP: https://dev.louiz.org/projects/slixmpp
 

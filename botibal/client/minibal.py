@@ -29,6 +29,7 @@ class MiniBal(ClientXMPP):
     """A minimalist XMPP bot"""
 
     # pylint: disable=too-many-public-methods,too-many-instance-attributes
+    # pylint: disable=inconsistent-return-statements
 
     def __init__(self, jid, password, nick, room, admin_jid, session):
         # pylint: disable=too-many-arguments
@@ -59,7 +60,7 @@ class MiniBal(ClientXMPP):
         # pylint: disable=unused-argument
         self.send_presence()
         self.get_roster()
-        self.plugin['xep_0045'].joinMUC(self.room, self.nick, wait=True)
+        self.plugin['xep_0045'].join_muc(self.room, self.nick, wait=True)
 
     def message(self, msg):
         """Handles PM messages and maps them to user commands"""

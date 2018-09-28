@@ -1,7 +1,7 @@
 Installation
 ============
 
-Botibal is currently compatible with `Python`_ 3.4 and 3.5, and has been
+Botibal is currently compatible with `Python`_ 3.5, 3.6 and 3.7, and has been
 tested on Linux.
 
 .. _Python: https://www.python.org/
@@ -49,7 +49,7 @@ To specify a Python interpreter:
 .. code-block:: bash
 
   # create a new Python 3 virtualenv
-  $ virtualenv -p /usr/bin/python3.4 /path/to/envs/botibal3
+  $ virtualenv -p /usr/bin/python3.5 /path/to/envs/botibal3
 
   # activate the virtualenv
   $ source /path/to/envs/botibal3/bin/activate

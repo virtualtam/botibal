@@ -13,7 +13,7 @@ Botibal
    :target: http://botibal.readthedocs.org/en/latest/?badge=latest
    :alt: Documentation Status
 
-A silly, quizzical XMPP bot based on the `SliXMPP`_ (3.4+) Python library.
+A silly, quizzical XMPP bot based on the `SliXMPP`_ (3.5+) Python library.
 
 .. _SliXMPP: https://dev.louiz.org/projects/slixmpp
 

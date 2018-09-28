@@ -40,10 +40,10 @@ setup(
         ],
     },
     install_requires=[
-        'pyasn1==0.3.7',
-        'pyasn1-modules==0.1.5',
-        'sqlalchemy>=1.1,<1.2',
-        'slixmpp==1.1',
+        'pyasn1==0.4.4',
+        'pyasn1-modules==0.2.2',
+        'sqlalchemy==1.2.12',
+        'slixmpp==1.4.0',
     ],
     extras_require={
         'DNS': ['dnspython==1.15.0'],
@@ -55,8 +55,8 @@ setup(
         'Natural Language :: English',
         'Operating System :: POSIX :: Linux',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Communications :: Chat',
     ])

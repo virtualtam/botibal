@@ -40,9 +40,8 @@ Tests:
 Tox
 ^^^
 
-Alternatively, if you have
-`Tox`_ installed, as well as
-both Python 3.4 and 3.5 interpreters available:
+Alternatively, if you have `Tox`_ installed, as well as a Python 3.5+
+interpreter available:
 
 .. code-block:: bash
 

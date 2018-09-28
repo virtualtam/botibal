@@ -8,7 +8,7 @@ from botibal.models import Taunt
 DEFAULT_AGGRO = 4
 
 
-class Tauntionary(object):
+class Tauntionary:
     """A nice collection of charming sentences"""
 
     def __init__(self, session):
