@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Botibal documentation build configuration file"""
+import datetime
 import os
 import shlex
 import sys
@@ -40,7 +41,8 @@ master_doc = 'index'
 # General information about the project.
 project = __title__.title()
 author = __author__
-copyright = '2016, {author}'.format(author=author)
+year = datetime.date.today().year
+copyright = '{year}, {author}'.format(author=author, year=year)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
